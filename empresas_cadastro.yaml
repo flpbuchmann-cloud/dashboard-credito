@@ -1,0 +1,106 @@
+# ============================================================================
+# CADASTRO DE EMPRESAS — Dashboard de Crédito
+# ============================================================================
+# Preencha este arquivo para adicionar uma nova empresa ao dashboard.
+# Após preencher, peça ao Claude para processar o cadastro.
+#
+# CAMPOS OBRIGATÓRIOS estão marcados com (*)
+# CAMPOS OPCIONAIS estão marcados com (~)
+# ============================================================================
+
+empresas:
+
+  # ---- Exemplo preenchido (CSN Mineração) ----
+  - nome: "CSN - Companhia Siderurgica Nacional"                        # (*) Nome de exibição no dashboard
+    ticker: "CSNA3"                               # (*) Código na B3 (ou "N/A" se não listada)
+    setor: "Siderurgia"                            # (*) Setor de atuação
+
+    # --- Dados CVM (empresa listada na B3) ---
+    tem_cvm: true                                 # (*) true = busca automática na CVM; false = dados manuais
+    nome_cvm: "CIA SIDERURGICA NACIONAL"                     # (~) Razão social na CVM (obrigatório se tem_cvm: true)
+
+    # --- Site de RI (para download automático de PDFs) ---
+    url_ri: "https://ri.csn.com.br/informacoes-financeiras/central-de-resultados/"
+    categorias_release:                           # (~) Categorias de releases no site de RI
+      - "central-release"
+    categorias_dfp_itr:                           # (~) Categorias de ITR/DFP no site de RI
+      - "itr-dfp"
+
+    # --- Pastas ---
+    pasta: "G:/Meu Drive/Análise de Crédito/CSN Siderurgica"  # (*) Pasta raiz da empresa
+
+    # --- Coleta ---
+    ano_inicio: 2021                              # (*) Ano inicial para buscar dados
+    ano_fim: null                                 # (~) Ano final (null = até o mais recente)
+
+    # --- Status ---
+    status: "ativo"                               # ativo | pendente | erro
+
+
+  # ---- Template para nova empresa (copie e preencha) ----
+
+  # - nome: "Nome da Empresa"
+  #   ticker: "TICK3"
+  #   setor: "Setor"
+  #
+  #   # Se a empresa tem dados na CVM (listada na B3):
+  #   tem_cvm: true
+  #   nome_cvm: "RAZÃO SOCIAL EXATA NA CVM"
+  #
+  #   # Se a empresa NÃO tem dados na CVM (privada, estrangeira, etc.):
+  #   # tem_cvm: false
+  #   # Neste caso, você precisará criar o contas_chave.json manualmente
+  #   # na pasta Dados_CVM/ (veja instruções na memória do projeto)
+  #
+  #   # Site de RI (opcional — só funciona com plataforma MZ):
+  #   url_ri: "https://ri.empresa.com.br/informacoes-financeiras/central-de-resultados/"
+  #   categorias_release:
+  #     - "central-release"
+  #   categorias_dfp_itr:
+  #     - "itr-dfp"
+  #
+  #   pasta: "G:/Meu Drive/Análise de Crédito/Nome da Empresa"
+  #   ano_inicio: 2021
+  #   ano_fim: null
+  #   status: "pendente"
+
+
+# ============================================================================
+# NOTAS:
+#
+# 1. COMO ENCONTRAR O nome_cvm:
+#    - Acesse: https://dados.cvm.gov.br/dados/CIA_ABERTA/CAD/DADOS/cad_cia_aberta.csv
+#    - Busque pelo nome comercial da empresa na coluna DENOM_COMERC ou DENOM_SOCIAL
+#    - O nome_cvm deve bater exatamente com uma dessas colunas
+#
+# 2. COMO IDENTIFICAR AS CATEGORIAS DO RI:
+#    - Abra o site de RI da empresa na página de resultados
+#    - O sistema lista as categorias automaticamente no log ao rodar a coleta
+#    - Categorias comuns: "central-release", "central-itr-dfp"
+#    - ATENÇÃO: a categoria varia por empresa! Ex: "itr-dfp" vs "central-itr-dfp"
+#      Verifique no log da coleta quais categorias estão disponíveis.
+#    - Se o site NÃO usa plataforma MZ, deixe url_ri vazio e baixe os PDFs manualmente
+#
+# 3. EMPRESAS SEM CVM (tem_cvm: false):
+#    - Crie a pasta manualmente
+#    - Coloque os PDFs de ITR/DFP em {pasta}/ITR_DFP/
+#    - Crie {pasta}/Dados_CVM/contas_chave.json com os dados financeiros
+#    - Formato do JSON: veja a memória do projeto para o schema completo
+#
+# 4. PASTA PADRÃO:
+#    - Todas as empresas ficam em: G:/Meu Drive/Análise de Crédito/{Nome}/
+#    - Subpastas criadas automaticamente: Releases/, ITR_DFP/, Dados_CVM/
+#
+# 5. FLUXO COMPLETO DE ADIÇÃO (executar nesta ordem):
+#    Etapa 1: python main.py --empresa "Nome" --apenas-ri    → Baixa PDFs (Releases + ITR/DFP)
+#    Etapa 2: python main.py --empresa "Nome" --apenas-cvm   → Baixa dados estruturados da CVM
+#    Etapa 3: No dashboard, clicar em "Extrair/Atualizar cronogramas dos PDFs"
+#             → Extrai cronogramas de amortização dos ITR/DFP baixados na Etapa 1
+#    Ou simplesmente: python main.py --empresa "Nome"         → Faz Etapas 1+2 de uma vez
+#
+# 6. CRONOGRAMA DE AMORTIZAÇÃO:
+#    - Extraído automaticamente dos PDFs de ITR/DFP (notas explicativas)
+#    - Requer que os PDFs estejam em {pasta}/ITR_DFP/
+#    - No dashboard, seção "Cronograma de Amortização e Liquidez", botão "Extrair/Atualizar"
+#    - Resultado salvo em {pasta}/Dados_CVM/cronogramas.json
+# ============================================================================

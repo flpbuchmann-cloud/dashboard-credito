@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+data/raw/
+data/pending_users.yaml
+.streamlit/secrets.toml
