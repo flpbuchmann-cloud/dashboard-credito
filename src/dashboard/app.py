@@ -1507,24 +1507,22 @@ Alinhamento nas tabelas:
 
 def app():
     """Entry point com autenticação."""
-    # Auth gate
-    authenticated, username, role = show_login()
-
-    if not authenticated:
-        # Mostrar tabs de login e registro
-        tab_login, tab_register = st.tabs(["Entrar", "Criar conta"])
-        with tab_login:
-            show_login()
-        with tab_register:
-            show_registration_form()
+    # Verificar se já está autenticado (sem renderizar formulário)
+    if st.session_state.get("authenticated", False):
+        show_logout()
+        if st.session_state.get("user_role") == "admin":
+            show_admin_panel()
+        main()
         return
 
-    # Usuário autenticado — mostrar dashboard
-    show_logout()
-    if role == "admin":
-        show_admin_panel()
-
-    main()
+    # Não autenticado — mostrar login e registro
+    tab_login, tab_register = st.tabs(["Entrar", "Criar conta"])
+    with tab_login:
+        authenticated, username, role = show_login()
+        if authenticated:
+            st.rerun()
+    with tab_register:
+        show_registration_form()
 
 
 if __name__ == "__main__":
