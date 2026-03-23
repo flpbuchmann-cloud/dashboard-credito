@@ -1,0 +1,11 @@
+cookie:
+  expiry_days: 30
+  key: dashboard_credito_secret_key_2026
+  name: dashboard_credito_auth
+users:
+  admin:
+    approved: true
+    email: flpbuchmann@gmail.com
+    name: Felipe Buchmann
+    password: $2b$12$cpNRm30m17qLx5Bny5FnGeR4LVgmLuwXcqqkcHR2Yn.A07potEZu.
+    role: admin
