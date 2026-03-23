@@ -578,13 +578,16 @@ def main():
             with open(caminho_quali, "r", encoding="utf-8") as f:
                 conteudo_quali = f.read()
 
-        # Alternar entre edição e visualização
-        modo_quali = st.radio(
-            "Modo",
-            ["Visualizar", "Editar"],
-            horizontal=True,
-            key="modo_quali",
-        )
+        # Alternar entre edição e visualização (edição só disponível localmente)
+        if IS_DEPLOYED:
+            modo_quali = "Visualizar"
+        else:
+            modo_quali = st.radio(
+                "Modo",
+                ["Visualizar", "Editar"],
+                horizontal=True,
+                key="modo_quali",
+            )
 
         if modo_quali == "Editar":
             # Referência rápida de Markdown
@@ -782,9 +785,10 @@ Alinhamento nas tabelas:
             with open(caminho_atualiz, "r", encoding="utf-8") as f:
                 atualizacoes = json.load(f)
 
-        # Formulário para nova atualização
-        with st.expander("➕ Adicionar nova atualização", expanded=False):
-            with st.form("form_atualizacao", clear_on_submit=True):
+        # Formulário para nova atualização (só disponível localmente)
+        if not IS_DEPLOYED:
+            with st.expander("➕ Adicionar nova atualização", expanded=False):
+              with st.form("form_atualizacao", clear_on_submit=True):
                 col_data, col_cat = st.columns([1, 1])
                 with col_data:
                     data_atualiz = st.date_input("Data", value=datetime.now().date())
@@ -849,12 +853,13 @@ Alinhamento nas tabelas:
                 if atualiz.get("corpo"):
                     st.markdown(atualiz["corpo"])
 
-                # Botão de deletar
-                if st.button("🗑️ Remover", key=f"del_atualiz_{idx}"):
-                    atualizacoes.pop(idx)
-                    with open(caminho_atualiz, "w", encoding="utf-8") as f:
-                        json.dump(atualizacoes, f, ensure_ascii=False, indent=2)
-                    st.rerun()
+                # Botão de deletar (só localmente)
+                if not IS_DEPLOYED:
+                    if st.button("🗑️ Remover", key=f"del_atualiz_{idx}"):
+                        atualizacoes.pop(idx)
+                        with open(caminho_atualiz, "w", encoding="utf-8") as f:
+                            json.dump(atualizacoes, f, ensure_ascii=False, indent=2)
+                        st.rerun()
 
                 st.markdown("---")
         else:

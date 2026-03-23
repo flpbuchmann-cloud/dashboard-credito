@@ -136,6 +136,73 @@ def _parse_tabela_por_ano(pdf: pdfplumber.PDF) -> dict | None:
 
 
 # ---------------------------------------------------------------------------
+# Parser: tabela com header de anos (formato Minerva)
+#   Header: "2026 2027 2028 2029 2030 ... Total"
+#   Linhas: "Debêntures 391.253 - 2.486.531 ... 14.086.562"
+#   Linha Total: "Total 59.910 1.641.964 ... 22.114.338"
+# ---------------------------------------------------------------------------
+
+def _parse_tabela_header_anos(pdf: pdfplumber.PDF) -> dict | None:
+    """
+    Procura tabela onde os anos estão no header e a linha 'Total' tem os valores.
+    Usa a tabela CONSOLIDADA (segunda ocorrência) quando disponível.
+    """
+    for page in pdf.pages:
+        text = page.extract_text() or ""
+        if "ano de vencimento" not in text.lower():
+            continue
+
+        lines = text.split('\n')
+        # Procurar linhas de header com anos
+        for i, line in enumerate(lines):
+            # Header: "2026 2027 2028 ... Total"
+            anos_match = re.findall(r'(20[2-4]\d)', line)
+            if len(anos_match) < 3 or 'total' not in line.lower():
+                continue
+
+            anos = anos_match
+            # Procurar linha "Total" nas próximas linhas
+            total_line = None
+            for j in range(i + 1, min(i + 30, len(lines))):
+                if re.match(r'^\s*Total\s', lines[j]):
+                    total_line = lines[j]
+                    # Continuar procurando — a segunda "Total" é a consolidada
+                    for k in range(j + 1, min(j + 30, len(lines))):
+                        if re.match(r'^\s*Total\s', lines[k]):
+                            total_line = lines[k]
+                            break
+                    break
+
+            if not total_line:
+                continue
+
+            # Limpar e extrair números
+            limpo = total_line
+            limpo = re.sub(r'(\d)\s+(\d)', r'\1\2', limpo)
+            limpo = re.sub(r'(\d)\s+\.', r'\1.', limpo)
+            limpo = re.sub(r'\.\s+(\d)', r'.\1', limpo)
+            limpo = re.sub(r'(\d)\s+(\d)', r'\1\2', limpo)
+
+            # Números positivos e negativos
+            nums_raw = re.findall(r'-?[\d]+(?:\.[\d]{3})*', limpo)
+            valores = []
+            for n in nums_raw:
+                v = _limpar_numero(n)
+                if v is not None:
+                    valores.append(v)
+
+            if len(valores) >= len(anos):
+                vencimentos = {}
+                for idx_ano, ano in enumerate(anos):
+                    if idx_ano < len(valores) and valores[idx_ano] > 0:
+                        vencimentos[ano] = valores[idx_ano] * 1000
+                if len(vencimentos) >= 3:
+                    return vencimentos
+
+    return None
+
+
+# ---------------------------------------------------------------------------
 # Parser: tabela de vencimentos contratuais (faixas)
 #   "Empréstimos, financiamentos e debêntures — 12 1.628.732 2.222.564 2.008.413 3.818.909 9.678.618"
 # ---------------------------------------------------------------------------
@@ -255,18 +322,24 @@ def extrair_cronograma_amortizacao(
     pdf = pdfplumber.open(caminho_pdf)
     caixa = _extrair_caixa(pdf)
 
-    # Estratégia 1: tabela por ano
+    # Estratégia 1: tabela por ano (anos no início da linha)
     vencimentos = _parse_tabela_por_ano(pdf)
     if vencimentos:
         print("OK (tabela por ano)")
 
-    # Estratégia 2: tabela por faixas
+    # Estratégia 2: tabela com header de anos (Minerva, etc.)
+    if not vencimentos:
+        vencimentos = _parse_tabela_header_anos(pdf)
+        if vencimentos:
+            print("OK (tabela header anos)")
+
+    # Estratégia 3: tabela por faixas
     if not vencimentos:
         vencimentos = _parse_tabela_faixas(pdf)
         if vencimentos:
             print("OK (tabela faixas)")
 
-    # Estratégia 3: Claude API
+    # Estratégia 4: Claude API
     if not vencimentos:
         # Extrair texto das páginas com "vencimento"
         textos = []
