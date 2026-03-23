@@ -52,6 +52,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["central_de_downloads_central_de_downloads"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Minerva",
     },
+    "Brava Energia": {
+        "nome_cvm": "BRAVA ENERGIA S.A.",
+        "url_ri": "",
+        "categorias_release": [],
+        "categorias_dfp_itr": [],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Brava Energia",
+    },
     "Plano & Plano": {
         "nome_cvm": "PLANO & PLANO DESENVOLVIMENTO IMOBILIÁRIO S.A.",
         "url_ri": "https://ri.planoeplano.com.br/informacoes-financeiras/central-de-resultados/",

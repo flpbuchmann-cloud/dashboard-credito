@@ -83,6 +83,11 @@ EMPRESAS = {
         "setor": "Construção Civil / Incorporação",
         "pasta": _pasta_empresa("Plano e Plano"),
     },
+    "Brava Energia": {
+        "ticker": "BRAV3",
+        "setor": "Petróleo e Gás",
+        "pasta": _pasta_empresa("Brava Energia"),
+    },
     "Raízen": {
         "ticker": "RAIZ4",
         "setor": "Energia / Açúcar e Etanol",
