@@ -52,6 +52,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["central_de_downloads_central_de_downloads"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Minerva",
     },
+    "Plano & Plano": {
+        "nome_cvm": "PLANO & PLANO DESENVOLVIMENTO IMOBILIÁRIO S.A.",
+        "url_ri": "https://ri.planoeplano.com.br/informacoes-financeiras/central-de-resultados/",
+        "categorias_release": ["central_de_resultados_release"],
+        "categorias_dfp_itr": ["central_de_resultados_itr", "central_de_resultados_dfp"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Plano e Plano",
+    },
     "CSN - Companhia Siderurgica Nacional": {
         "nome_cvm": "CIA SIDERURGICA NACIONAL",
         "url_ri": "https://ri.csn.com.br/informacoes-financeiras/central-de-resultados/",

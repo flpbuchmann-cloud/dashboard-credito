@@ -78,6 +78,11 @@ EMPRESAS = {
         "setor": "Alimentos / Frigoríficos",
         "pasta": _pasta_empresa("Minerva"),
     },
+    "Plano & Plano": {
+        "ticker": "PLPL3",
+        "setor": "Construção Civil / Incorporação",
+        "pasta": _pasta_empresa("Plano e Plano"),
+    },
     "Raízen": {
         "ticker": "RAIZ4",
         "setor": "Energia / Açúcar e Etanol",
