@@ -83,6 +83,11 @@ EMPRESAS = {
         "setor": "Construção Civil / Incorporação",
         "pasta": _pasta_empresa("Plano e Plano"),
     },
+    "Cemig": {
+        "ticker": "CMIG4",
+        "setor": "Energia Elétrica",
+        "pasta": _pasta_empresa("Cemig"),
+    },
     "Equatorial": {
         "ticker": "EQTL3",
         "setor": "Energia Elétrica / Distribuição",
