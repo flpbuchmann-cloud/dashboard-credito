@@ -73,6 +73,11 @@ EMPRESAS = {
         "setor": "Siderurgia",
         "pasta": _pasta_empresa("CSN Siderurgica"),
     },
+    "Minerva Foods": {
+        "ticker": "BEEF3",
+        "setor": "Alimentos / Frigoríficos",
+        "pasta": _pasta_empresa("Minerva"),
+    },
     "Raízen": {
         "ticker": "RAIZ4",
         "setor": "Energia / Açúcar e Etanol",

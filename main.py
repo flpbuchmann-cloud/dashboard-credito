@@ -45,6 +45,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["cr-grupo-raizen-itr", "cr-relatorio-resultados-grupo-raizen-dfp"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Raizen",
     },
+    "Minerva Foods": {
+        "nome_cvm": "MINERVA S/A",
+        "url_ri": "https://ri.minervafoods.com/central-de-downloads-2/",
+        "categorias_release": ["central_de_downloads_central_de_downloads"],
+        "categorias_dfp_itr": ["central_de_downloads_central_de_downloads"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Minerva",
+    },
     "CSN - Companhia Siderurgica Nacional": {
         "nome_cvm": "CIA SIDERURGICA NACIONAL",
         "url_ri": "https://ri.csn.com.br/informacoes-financeiras/central-de-resultados/",
