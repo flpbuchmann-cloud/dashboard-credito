@@ -1,5 +1,18 @@
 [
   {
+    "data_referencia": "2025-09-30",
+    "caixa": null,
+    "vencimentos": {
+      "2025": 2400000000,
+      "2026": 6400000000,
+      "2027": 7300000000,
+      "2028": 7900000000,
+      "acima_5_anos": 38700000000
+    },
+    "divida_total": 62700000000,
+    "arquivo": "Release_3T25.pdf"
+  },
+  {
     "data_referencia": "2025-06-30",
     "caixa": null,
     "vencimentos": {
