@@ -83,6 +83,11 @@ EMPRESAS = {
         "setor": "Construção Civil / Incorporação",
         "pasta": _pasta_empresa("Plano e Plano"),
     },
+    "Equatorial": {
+        "ticker": "EQTL3",
+        "setor": "Energia Elétrica / Distribuição",
+        "pasta": _pasta_empresa("Equatorial"),
+    },
     "Brava Energia": {
         "ticker": "BRAV3",
         "setor": "Petróleo e Gás",

@@ -52,6 +52,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["central_de_downloads_central_de_downloads"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Minerva",
     },
+    "Equatorial": {
+        "nome_cvm": "EQUATORIAL S.A.",
+        "url_ri": "",
+        "categorias_release": [],
+        "categorias_dfp_itr": [],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Equatorial",
+    },
     "Brava Energia": {
         "nome_cvm": "BRAVA ENERGIA S.A.",
         "url_ri": "",
