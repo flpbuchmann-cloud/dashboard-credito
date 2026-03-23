@@ -52,6 +52,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["central_de_downloads_central_de_downloads"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Minerva",
     },
+    "Eneva": {
+        "nome_cvm": "ENEVA S.A.",
+        "url_ri": "https://ri.eneva.com.br/informacoes-financeiras/central-de-resultados/",
+        "categorias_release": ["central-release"],
+        "categorias_dfp_itr": ["central-itrdfp"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Eneva",
+    },
     "Cemig": {
         "nome_cvm": "CIA ENERG MINAS GERAIS - CEMIG",
         "url_ri": "https://ri.cemig.com.br/divulgacao-e-resultados/central-de-resultados",

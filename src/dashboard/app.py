@@ -83,6 +83,11 @@ EMPRESAS = {
         "setor": "Construção Civil / Incorporação",
         "pasta": _pasta_empresa("Plano e Plano"),
     },
+    "Eneva": {
+        "ticker": "ENEV3",
+        "setor": "Energia / Gás e Geração",
+        "pasta": _pasta_empresa("Eneva"),
+    },
     "Cemig": {
         "ticker": "CMIG4",
         "setor": "Energia Elétrica",
