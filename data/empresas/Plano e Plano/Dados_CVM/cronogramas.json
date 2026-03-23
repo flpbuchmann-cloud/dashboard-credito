@@ -12,5 +12,28 @@
     },
     "divida_total": 8524418130000.0,
     "arquivo": "DFP_4T25.pdf"
+  },
+  {
+    "data_referencia": "2024-12-31",
+    "caixa": null,
+    "vencimentos": {
+      "2024": 134708000.0,
+      "2025": 21621000.0,
+      "2026": 2934094000.0,
+      "2027": 61191000.0
+    },
+    "divida_total": 3151614000.0,
+    "arquivo": "DFP_4T24.pdf"
+  },
+  {
+    "data_referencia": "2023-12-31",
+    "caixa": 92573000.0,
+    "vencimentos": {
+      "2023": 82140000.0,
+      "2024": 26727000.0,
+      "2025": 111704000.0
+    },
+    "divida_total": 220571000.0,
+    "arquivo": "DFP_4T23.pdf"
   }
 ]
