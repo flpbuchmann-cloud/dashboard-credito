@@ -475,6 +475,133 @@ class ColetorCVM:
         self._log(f"\n=== Concluído: {len(todas_contas)} registros de contas extraídos ===")
         return resultado
 
+    def baixar_pdfs_itr_dfp(
+        self,
+        empresa: str,
+        ano_inicio: int,
+        ano_fim: int | None = None,
+        pasta_destino: str | None = None,
+    ) -> list[str]:
+        """
+        Baixa PDFs de ITR/DFP diretamente da CVM (ENET) para qualquer empresa.
+
+        Não depende do site de RI — usa o Portal de Dados Abertos da CVM.
+        Cada documento é um ZIP contendo o PDF completo com notas explicativas.
+
+        Returns:
+            Lista de caminhos dos PDFs baixados.
+        """
+        if ano_fim is None:
+            ano_fim = datetime.now().year
+
+        cadastro = self.buscar_empresa(empresa)
+        cd_cvm = int(cadastro["cd_cvm"])
+        self._log(f"=== Download PDFs CVM: {cadastro['razao_social']} (CVM: {cd_cvm}) ===")
+
+        if pasta_destino:
+            os.makedirs(pasta_destino, exist_ok=True)
+
+        session = requests.Session()
+        session.headers.update({
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        })
+
+        pdfs_baixados = []
+
+        for ano in range(ano_inicio, ano_fim + 1):
+            for tipo in ["itr", "dfp"]:
+                # Baixar índice do ano
+                url_zip = f"{self.BASE_URL}/{tipo}_cia_aberta_{ano}.zip"
+                zip_path = os.path.join(self.cache_dir, f"{tipo}_{ano}.zip")
+
+                if not os.path.exists(zip_path):
+                    try:
+                        resp = requests.get(url_zip, timeout=60)
+                        if resp.status_code != 200:
+                            continue
+                        with open(zip_path, "wb") as f:
+                            f.write(resp.content)
+                    except Exception:
+                        continue
+
+                # Ler índice e buscar documentos da empresa
+                try:
+                    import zipfile
+                    with zipfile.ZipFile(zip_path) as z:
+                        index_name = f"{tipo}_cia_aberta_{ano}.csv"
+                        if index_name not in z.namelist():
+                            continue
+                        df_idx = pd.read_csv(
+                            z.open(index_name), encoding="latin-1", sep=";"
+                        )
+                        docs = df_idx[df_idx["CD_CVM"] == cd_cvm]
+
+                        for _, doc in docs.iterrows():
+                            link = doc.get("LINK_DOC", "")
+                            dt_ref = doc.get("DT_REFER", "")
+                            versao = doc.get("VERSAO", 1)
+                            categ = doc.get("CATEG_DOC", tipo.upper())
+
+                            if not link:
+                                continue
+
+                            # Converter data para trimestre
+                            try:
+                                dt = pd.Timestamp(dt_ref)
+                                tri = (dt.month - 1) // 3 + 1
+                                ano_ref = dt.year
+                                if categ == "DFP" or tri == 4:
+                                    nome_pdf = f"DFP_4T{ano_ref % 100:02d}.pdf"
+                                else:
+                                    nome_pdf = f"ITR_{tri}T{ano_ref % 100:02d}.pdf"
+                            except Exception:
+                                nome_pdf = f"{categ}_{ano}.pdf"
+
+                            destino = os.path.join(pasta_destino, nome_pdf) if pasta_destino else nome_pdf
+
+                            # Pular se já existe
+                            if os.path.exists(destino):
+                                self._log(f"  Já existe: {nome_pdf}")
+                                pdfs_baixados.append(destino)
+                                continue
+
+                            # Baixar ZIP do documento (contém o PDF)
+                            link_https = link.replace("http://", "https://")
+                            try:
+                                self._log(f"  Baixando {nome_pdf}...")
+                                resp = session.get(link_https, timeout=120)
+                                if resp.status_code != 200:
+                                    self._log(f"  ERRO: status {resp.status_code}")
+                                    continue
+
+                                # Extrair PDF do ZIP
+                                if resp.content[:2] == b"PK":
+                                    doc_zip = zipfile.ZipFile(io.BytesIO(resp.content))
+                                    pdf_names = [n for n in doc_zip.namelist() if n.lower().endswith(".pdf")]
+                                    if pdf_names:
+                                        pdf_data = doc_zip.read(pdf_names[0])
+                                        with open(destino, "wb") as f:
+                                            f.write(pdf_data)
+                                        size_mb = len(pdf_data) / 1024 / 1024
+                                        self._log(f"  OK: {nome_pdf} ({size_mb:.1f} MB)")
+                                        pdfs_baixados.append(destino)
+                                    else:
+                                        self._log(f"  ERRO: ZIP sem PDF")
+                                else:
+                                    # Resposta direta é o PDF
+                                    with open(destino, "wb") as f:
+                                        f.write(resp.content)
+                                    pdfs_baixados.append(destino)
+
+                            except Exception as e:
+                                self._log(f"  ERRO ao baixar {nome_pdf}: {e}")
+
+                except Exception as e:
+                    self._log(f"Erro processando {tipo}_{ano}: {e}")
+
+        self._log(f"\n=== {len(pdfs_baixados)} PDFs baixados ===")
+        return pdfs_baixados
+
 
 if __name__ == "__main__":
     import argparse
@@ -487,6 +614,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     coletor = ColetorCVM()
+    # Baixar PDFs se solicitado
+    if hasattr(args, 'baixar_pdfs') and args.baixar_pdfs:
+        coletor.baixar_pdfs_itr_dfp(
+            empresa=args.empresa,
+            ano_inicio=args.ano_inicio,
+            ano_fim=args.ano_fim,
+            pasta_destino=os.path.join(args.pasta, "ITR_DFP") if args.pasta else None,
+        )
+
     resultado = coletor.coletar(
         empresa=args.empresa,
         ano_inicio=args.ano_inicio,
