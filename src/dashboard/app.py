@@ -1231,19 +1231,21 @@ Alinhamento nas tabelas:
             with open(caminho_cronogramas, "r", encoding="utf-8") as f:
                 cronogramas = json.load(f)
 
-        col_btn1, col_btn2 = st.columns([1, 5])
-        with col_btn1:
-            re_extrair = st.button("Extrair/Atualizar cronogramas dos PDFs")
+        # Botão de extração só disponível localmente (precisa dos PDFs + API)
+        if not IS_DEPLOYED:
+            col_btn1, col_btn2 = st.columns([1, 5])
+            with col_btn1:
+                re_extrair = st.button("Extrair/Atualizar cronogramas dos PDFs")
 
-        if re_extrair:
-            with st.spinner("Extraindo cronogramas dos PDFs... (pode levar alguns minutos)"):
-                from src.coleta.pdf_parser import extrair_cronogramas_pasta, salvar_cronogramas
-                cronogramas = extrair_cronogramas_pasta(pasta_itr)
-                if cronogramas:
-                    salvar_cronogramas(cronogramas, caminho_cronogramas)
-                    st.success(f"{len(cronogramas)} cronogramas extraídos e salvos.")
-                else:
-                    st.warning("Nenhum cronograma extraído.")
+            if re_extrair:
+                with st.spinner("Extraindo cronogramas dos PDFs... (pode levar alguns minutos)"):
+                    from src.coleta.pdf_parser import extrair_cronogramas_pasta, salvar_cronogramas
+                    cronogramas = extrair_cronogramas_pasta(pasta_itr)
+                    if cronogramas:
+                        salvar_cronogramas(cronogramas, caminho_cronogramas)
+                        st.success(f"{len(cronogramas)} cronogramas extraídos e salvos.")
+                    else:
+                        st.warning("Nenhum cronograma extraído.")
 
         if cronogramas:
             recentes = sorted(cronogramas, key=lambda c: c.get("data_referencia", ""), reverse=True)[:3]
