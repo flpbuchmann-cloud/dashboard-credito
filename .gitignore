@@ -4,3 +4,4 @@ __pycache__/
 *.egg-info/
 data/raw/
 .streamlit/secrets.toml
+service_account.json
