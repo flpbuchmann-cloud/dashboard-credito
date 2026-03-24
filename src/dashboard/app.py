@@ -70,6 +70,7 @@ _PASTA_DEPLOY = {
     "JSL": "JSL",
     "JBS": "JBS",
     "Direcional": "Direcional",
+    "Aegea": "Aegea",
 }
 
 
@@ -208,6 +209,11 @@ EMPRESAS = {
         "ticker": "DIRR3",
         "setor": "Construção Civil / Incorporação",
         "pasta": _pasta_empresa("Direcional"),
+    },
+    "Aegea": {
+        "ticker": "N/A",
+        "setor": "Saneamento",
+        "pasta": _pasta_empresa("Aegea"),
     },
 }
 

@@ -143,6 +143,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["central_de_resultados_itrdfp"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Direcional",
     },
+    "Aegea": {
+        "nome_cvm": "AEGEA SANEAMENTO E PARTICIPAÇÕES S.A.",
+        "url_ri": "https://ri.aegea.com.br/informacoes-aos-investidores/central-de-resultados/",
+        "categorias_release": ["central-releases-de-resultados"],
+        "categorias_dfp_itr": ["central-itrdfp"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Aegea",
+    },
 }
 
 

@@ -170,6 +170,25 @@ empresas:
     status: "ativo"
 
 
+  - nome: "Aegea"
+    ticker: "N/A"
+    setor: "Saneamento"
+
+    tem_cvm: true
+    nome_cvm: "AEGEA SANEAMENTO E PARTICIPAÇÕES S.A."
+
+    url_ri: "https://ri.aegea.com.br/informacoes-aos-investidores/central-de-resultados/"
+    categorias_release:
+      - "central-releases-de-resultados"
+    categorias_dfp_itr:
+      - "central-itrdfp"
+
+    pasta: "G:/Meu Drive/Análise de Crédito/Aegea"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "ativo"
+
+
   # ---- Template para nova empresa (copie e preencha) ----
 
   # - nome: "Nome da Empresa"
