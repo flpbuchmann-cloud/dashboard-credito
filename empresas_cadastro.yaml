@@ -94,6 +94,25 @@ empresas:
     status: "ativo"
 
 
+  - nome: "Vamos"
+    ticker: "VAMO3"
+    setor: "Locação de Caminhões e Máquinas"
+
+    tem_cvm: true
+    nome_cvm: "VAMOS LOCAÇÃO DE CAMINHÕES, MÁQUINAS E EQUIPAMENTOS S.A."
+
+    url_ri: "https://ri.grupovamos.com.br/informacoes-financeiras/resultados-trimestrais/"
+    categorias_release:
+      - "cr-trimestrais"
+    categorias_dfp_itr:
+      - "cr-demonstracoes-financeiras"
+
+    pasta: "G:/Meu Drive/Análise de Crédito/Vamos"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "ativo"
+
+
   # ---- Template para nova empresa (copie e preencha) ----
 
   # - nome: "Nome da Empresa"

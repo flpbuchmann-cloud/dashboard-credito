@@ -66,6 +66,7 @@ _PASTA_DEPLOY = {
     "Raízen": "Raizen",
     "Rede D'Or": "Rede Dor",
     "Movida": "Movida",
+    "Vamos": "Vamos",
 }
 
 
@@ -184,6 +185,11 @@ EMPRESAS = {
         "ticker": "MOVI3",
         "setor": "Locação de Veículos",
         "pasta": _pasta_empresa("Movida"),
+    },
+    "Vamos": {
+        "ticker": "VAMO3",
+        "setor": "Locação de Caminhões e Máquinas",
+        "pasta": _pasta_empresa("Vamos"),
     },
 }
 

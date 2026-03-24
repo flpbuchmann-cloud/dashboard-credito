@@ -115,6 +115,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["resultados-itrdfp"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Movida",
     },
+    "Vamos": {
+        "nome_cvm": "VAMOS LOCAÇÃO DE CAMINHÕES, MÁQUINAS E EQUIPAMENTOS S.A.",
+        "url_ri": "https://ri.grupovamos.com.br/informacoes-financeiras/resultados-trimestrais/",
+        "categorias_release": ["cr-trimestrais"],
+        "categorias_dfp_itr": ["cr-demonstracoes-financeiras"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Vamos",
+    },
 }
 
 
