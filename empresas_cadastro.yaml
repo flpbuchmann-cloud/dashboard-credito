@@ -228,6 +228,25 @@ empresas:
     status: "ativo"
 
 
+  - nome: "Log CP"
+    ticker: "LOGG3"
+    setor: "Galpões Logísticos"
+
+    tem_cvm: true
+    nome_cvm: "LOG COMMERCIAL PROPERTIES E PARTICIPAÇÕES"
+
+    url_ri: "https://ri.logcp.com.br/informacoes-financeiras/central-de-resultados/"
+    categorias_release:
+      - "release"
+    categorias_dfp_itr:
+      - "demonstracoes-financeiras-itrdfp"
+
+    pasta: "G:/Meu Drive/Análise de Crédito/Log CP"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "ativo"
+
+
   # ---- Template para nova empresa (copie e preencha) ----
 
   # - nome: "Nome da Empresa"

@@ -164,6 +164,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["central_de_resultados_demonstracoes_financeiras_itr__dfp"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Cyrela",
     },
+    "Log CP": {
+        "nome_cvm": "LOG COMMERCIAL PROPERTIES E PARTICIPAÇÕES",
+        "url_ri": "https://ri.logcp.com.br/informacoes-financeiras/central-de-resultados/",
+        "categorias_release": ["release"],
+        "categorias_dfp_itr": ["demonstracoes-financeiras-itrdfp"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Log CP",
+    },
 }
 
 

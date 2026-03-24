@@ -73,6 +73,7 @@ _PASTA_DEPLOY = {
     "Aegea": "Aegea",
     "Moura Dubeux": "Moura Dubeux",
     "Cyrela": "Cyrela",
+    "Log CP": "Log CP",
 }
 
 
@@ -226,6 +227,11 @@ EMPRESAS = {
         "ticker": "CYRE3",
         "setor": "Construção Civil / Incorporação",
         "pasta": _pasta_empresa("Cyrela"),
+    },
+    "Log CP": {
+        "ticker": "LOGG3",
+        "setor": "Galpões Logísticos",
+        "pasta": _pasta_empresa("Log CP"),
     },
 }
 
