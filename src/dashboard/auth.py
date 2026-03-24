@@ -2,7 +2,10 @@
 Módulo de autenticação para o Dashboard de Crédito.
 
 Gerencia login, registro de novos usuários e painel de aprovação admin.
-Usa streamlit-authenticator + YAML para persistência.
+
+Backend:
+  - Streamlit Cloud (deploy): Google Sheets via gspread (persistente)
+  - Localhost: YAML local (fallback)
 """
 
 import os
@@ -11,11 +14,142 @@ import bcrypt
 import streamlit as st
 from datetime import datetime
 
-# Caminhos dos arquivos de usuários
+# Caminhos dos arquivos YAML (fallback local)
 AUTH_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data")
 USERS_FILE = os.path.join(AUTH_DIR, "users.yaml")
 PENDING_FILE = os.path.join(AUTH_DIR, "pending_users.yaml")
 
+
+# =========================================================================
+# Backend: Google Sheets
+# =========================================================================
+
+def _use_gsheets() -> bool:
+    """Retorna True se deve usar Google Sheets (credenciais disponíveis)."""
+    try:
+        secrets = st.secrets
+        return "gcp_service_account" in secrets and "gsheets" in secrets
+    except Exception:
+        return False
+
+
+def _get_gsheets_client():
+    """Retorna cliente gspread autenticado via service account."""
+    import gspread
+    from google.oauth2.service_account import Credentials
+
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive",
+    ]
+    creds = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"], scopes=scopes
+    )
+    return gspread.authorize(creds)
+
+
+@st.cache_resource(ttl=60)
+def _get_spreadsheet():
+    """Retorna a planilha (cacheada por 60s)."""
+    client = _get_gsheets_client()
+    sheet_url = st.secrets["gsheets"]["spreadsheet_url"]
+    return client.open_by_url(sheet_url)
+
+
+def _get_worksheet(name: str):
+    """Retorna (ou cria) uma aba da planilha."""
+    spreadsheet = _get_spreadsheet()
+    try:
+        return spreadsheet.worksheet(name)
+    except Exception:
+        ws = spreadsheet.add_worksheet(title=name, rows=100, cols=10)
+        if name == "users":
+            ws.append_row(["username", "name", "email", "password", "role", "approved"])
+        elif name == "pending":
+            ws.append_row(["username", "name", "email", "password", "requested_at"])
+        return ws
+
+
+def _gsheets_load_users() -> dict:
+    """Carrega usuários do Google Sheets."""
+    ws = _get_worksheet("users")
+    records = ws.get_all_records()
+    users = {}
+    for row in records:
+        if row.get("username"):
+            users[row["username"]] = {
+                "name": row.get("name", ""),
+                "email": row.get("email", ""),
+                "password": row.get("password", ""),
+                "role": row.get("role", "viewer"),
+                "approved": str(row.get("approved", "")).lower() in ("true", "1", "yes"),
+            }
+    return users
+
+
+def _gsheets_save_user(username: str, user_data: dict):
+    """Salva/atualiza um usuário no Google Sheets."""
+    ws = _get_worksheet("users")
+    records = ws.get_all_records()
+
+    # Verificar se já existe
+    for idx, row in enumerate(records):
+        if row.get("username") == username:
+            # Atualizar (row index = idx + 2: +1 header, +1 zero-based)
+            row_num = idx + 2
+            ws.update(f"A{row_num}:F{row_num}", [[
+                username,
+                user_data.get("name", ""),
+                user_data.get("email", ""),
+                user_data.get("password", ""),
+                user_data.get("role", "viewer"),
+                str(user_data.get("approved", False)),
+            ]])
+            return
+
+    # Novo usuário
+    ws.append_row([
+        username,
+        user_data.get("name", ""),
+        user_data.get("email", ""),
+        user_data.get("password", ""),
+        user_data.get("role", "viewer"),
+        str(user_data.get("approved", False)),
+    ])
+
+
+def _gsheets_load_pending() -> list:
+    """Carrega solicitações pendentes do Google Sheets."""
+    ws = _get_worksheet("pending")
+    records = ws.get_all_records()
+    return [r for r in records if r.get("username")]
+
+
+def _gsheets_add_pending(pending: dict):
+    """Adiciona solicitação pendente."""
+    ws = _get_worksheet("pending")
+    ws.append_row([
+        pending.get("username", ""),
+        pending.get("name", ""),
+        pending.get("email", ""),
+        pending.get("password", ""),
+        pending.get("requested_at", ""),
+    ])
+
+
+def _gsheets_remove_pending(username: str):
+    """Remove solicitação pendente pelo username."""
+    ws = _get_worksheet("pending")
+    records = ws.get_all_records()
+    for idx, row in enumerate(records):
+        if row.get("username") == username:
+            ws.delete_rows(idx + 2)  # +1 header, +1 zero-based
+            return
+
+
+# =========================================================================
+# Backend: YAML (fallback local)
+# =========================================================================
 
 def _load_yaml(path: str) -> dict:
     if os.path.exists(path):
@@ -30,12 +164,78 @@ def _save_yaml(path: str, data: dict):
         yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
 
 
+# =========================================================================
+# Interface unificada
+# =========================================================================
+
 def _hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 def _check_password(password: str, hashed: str) -> bool:
-    return bcrypt.checkpw(password.encode(), hashed.encode())
+    try:
+        return bcrypt.checkpw(password.encode(), hashed.encode())
+    except Exception:
+        return False
+
+
+def _load_users() -> dict:
+    """Carrega usuários (Google Sheets ou YAML)."""
+    if _use_gsheets():
+        return _gsheets_load_users()
+
+    _ensure_users_file()
+    data = _load_yaml(USERS_FILE)
+    return data.get("users", {})
+
+
+def _save_user(username: str, user_data: dict):
+    """Salva um usuário (Google Sheets ou YAML)."""
+    if _use_gsheets():
+        _gsheets_save_user(username, user_data)
+        _get_spreadsheet.clear()  # Limpar cache
+        return
+
+    _ensure_users_file()
+    data = _load_yaml(USERS_FILE)
+    data.setdefault("users", {})[username] = user_data
+    _save_yaml(USERS_FILE, data)
+
+
+def _load_pending() -> list:
+    """Carrega pendentes (Google Sheets ou YAML)."""
+    if _use_gsheets():
+        return _gsheets_load_pending()
+
+    _ensure_pending_file()
+    data = _load_yaml(PENDING_FILE)
+    return data.get("pending", [])
+
+
+def _add_pending(pending: dict):
+    """Adiciona pendente (Google Sheets ou YAML)."""
+    if _use_gsheets():
+        _gsheets_add_pending(pending)
+        _get_spreadsheet.clear()
+        return
+
+    _ensure_pending_file()
+    data = _load_yaml(PENDING_FILE)
+    data.setdefault("pending", []).append(pending)
+    _save_yaml(PENDING_FILE, data)
+
+
+def _remove_pending(username: str):
+    """Remove pendente (Google Sheets ou YAML)."""
+    if _use_gsheets():
+        _gsheets_remove_pending(username)
+        _get_spreadsheet.clear()
+        return
+
+    _ensure_pending_file()
+    data = _load_yaml(PENDING_FILE)
+    data["pending"] = [p for p in data.get("pending", []) if p["username"] != username]
+    _save_yaml(PENDING_FILE, data)
 
 
 def _ensure_users_file():
@@ -51,11 +251,6 @@ def _ensure_users_file():
                     "approved": True,
                 }
             },
-            "cookie": {
-                "name": "dashboard_credito_auth",
-                "key": "dashboard_credito_secret_key_2026",
-                "expiry_days": 30,
-            },
         }
         _save_yaml(USERS_FILE, admin_data)
 
@@ -65,15 +260,12 @@ def _ensure_pending_file():
         _save_yaml(PENDING_FILE, {"pending": []})
 
 
+# =========================================================================
+# UI Components
+# =========================================================================
+
 def show_login() -> tuple[bool, str, str]:
-    """
-    Exibe formulário de login.
-
-    Returns:
-        (authenticated, username, role)
-    """
-    _ensure_users_file()
-
+    """Exibe formulário de login. Returns: (authenticated, username, role)"""
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
         st.session_state["username"] = ""
@@ -82,8 +274,7 @@ def show_login() -> tuple[bool, str, str]:
     if st.session_state["authenticated"]:
         return True, st.session_state["username"], st.session_state["user_role"]
 
-    users_data = _load_yaml(USERS_FILE)
-    users = users_data.get("users", {})
+    users = _load_users()
 
     st.markdown("### Login")
     username = st.text_input("Usuário", key="login_username")
@@ -109,8 +300,6 @@ def show_login() -> tuple[bool, str, str]:
 
 def show_registration_form():
     """Exibe formulário de registro (solicitação de conta)."""
-    _ensure_pending_file()
-
     st.markdown("### Solicitar Acesso")
     st.info("Preencha o formulário abaixo. Sua solicitação será enviada ao administrador para aprovação.")
 
@@ -137,40 +326,32 @@ def show_registration_form():
                 return
 
             # Verificar se username já existe
-            users_data = _load_yaml(USERS_FILE)
-            if username in users_data.get("users", {}):
+            users = _load_users()
+            if username in users:
                 st.error("Este nome de usuário já está em uso.")
                 return
 
             # Verificar se já tem solicitação pendente
-            pending_data = _load_yaml(PENDING_FILE)
-            pending_list = pending_data.get("pending", [])
+            pending_list = _load_pending()
             if any(p["username"] == username for p in pending_list):
                 st.warning("Já existe uma solicitação pendente com este nome de usuário.")
                 return
 
             # Adicionar à lista de pendentes
-            pending_list.append({
+            _add_pending({
                 "username": username,
                 "name": name,
                 "email": email,
                 "password": _hash_password(password),
                 "requested_at": datetime.now().isoformat(),
             })
-            pending_data["pending"] = pending_list
-            _save_yaml(PENDING_FILE, pending_data)
             st.success("Solicitação enviada! Aguarde a aprovação do administrador.")
 
 
 def show_admin_panel():
     """Painel de aprovação de usuários (apenas para admin)."""
-    _ensure_pending_file()
-
-    pending_data = _load_yaml(PENDING_FILE)
-    pending_list = pending_data.get("pending", [])
-
-    users_data = _load_yaml(USERS_FILE)
-    users = users_data.get("users", {})
+    pending_list = _load_pending()
+    users = _load_users()
 
     with st.sidebar.expander(f"Admin — Usuários ({len(pending_list)} pendentes)", expanded=False):
         # Usuários aprovados
@@ -188,33 +369,24 @@ def show_admin_panel():
                 st.markdown(
                     f"**{pending['name']}** (`{pending['username']}`)\n\n"
                     f"Email: {pending['email']}\n\n"
-                    f"Solicitado em: {pending['requested_at'][:10]}"
+                    f"Solicitado em: {str(pending.get('requested_at', ''))[:10]}"
                 )
                 col_approve, col_reject = st.columns(2)
                 with col_approve:
                     if st.button("Aprovar", key=f"approve_{idx}"):
-                        # Mover para users.yaml
-                        users[pending["username"]] = {
+                        _save_user(pending["username"], {
                             "name": pending["name"],
                             "email": pending["email"],
                             "password": pending["password"],
                             "role": "viewer",
                             "approved": True,
-                        }
-                        users_data["users"] = users
-                        _save_yaml(USERS_FILE, users_data)
-
-                        # Remover de pendentes
-                        pending_list.pop(idx)
-                        pending_data["pending"] = pending_list
-                        _save_yaml(PENDING_FILE, pending_data)
+                        })
+                        _remove_pending(pending["username"])
                         st.rerun()
 
                 with col_reject:
                     if st.button("Rejeitar", key=f"reject_{idx}"):
-                        pending_list.pop(idx)
-                        pending_data["pending"] = pending_list
-                        _save_yaml(PENDING_FILE, pending_data)
+                        _remove_pending(pending["username"])
                         st.rerun()
 
                 st.markdown("---")
