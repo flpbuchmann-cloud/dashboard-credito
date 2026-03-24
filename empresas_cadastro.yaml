@@ -264,6 +264,25 @@ empresas:
     status: "pendente"
 
 
+  - nome: "FS Bioenergia"
+    ticker: "N/A"
+    setor: "Sucroenergético / Etanol"
+
+    tem_cvm: false
+    nome_cvm: ""
+
+    url_ri: "https://www.fs.agr.br/investidores/informacoes-financeiras/central-de-resultados/"
+    categorias_release:
+      - "resultados"
+    categorias_dfp_itr:
+      - "demonstracoes-financeiras"
+
+    pasta: "G:/Meu Drive/Análise de Crédito/FS Bioenergia"
+    ano_inicio: 2024
+    ano_fim: null
+    status: "ativo"
+
+
   # ---- Template para nova empresa (copie e preencha) ----
 
   # - nome: "Nome da Empresa"

@@ -150,6 +150,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["central-itrdfp"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Aegea",
     },
+    "FS Bioenergia": {
+        "nome_cvm": "",
+        "url_ri": "https://www.fs.agr.br/investidores/informacoes-financeiras/central-de-resultados/",
+        "categorias_release": ["resultados"],
+        "categorias_dfp_itr": ["demonstracoes-financeiras"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/FS Bioenergia",
+    },
     "Moura Dubeux": {
         "nome_cvm": "MOURA DUBEUX ENGENHARIA S/A",
         "url_ri": "https://ri.mouradubeux.com.br/informacoes-financeiras/central-de-resultados/",

@@ -75,6 +75,7 @@ _PASTA_DEPLOY = {
     "Cyrela": "Cyrela",
     "Log CP": "Log CP",
     "Cocal": "Cocal",
+    "FS Bioenergia": "FS Bioenergia",
 }
 
 
@@ -238,6 +239,11 @@ EMPRESAS = {
         "ticker": "N/A",
         "setor": "Sucroenergético",
         "pasta": _pasta_empresa("Cocal"),
+    },
+    "FS Bioenergia": {
+        "ticker": "N/A",
+        "setor": "Sucroenergético / Etanol",
+        "pasta": _pasta_empresa("FS Bioenergia"),
     },
 }
 
