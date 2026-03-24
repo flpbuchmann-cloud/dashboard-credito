@@ -122,6 +122,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["cr-demonstracoes-financeiras"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Vamos",
     },
+    "JSL": {
+        "nome_cvm": "JSL S.A.",
+        "url_ri": "https://ri.jsl.com.br/central-de-resultados/",
+        "categorias_release": ["resultados-release"],
+        "categorias_dfp_itr": ["resultados-itr"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/JSL",
+    },
 }
 
 

@@ -67,6 +67,7 @@ _PASTA_DEPLOY = {
     "Rede D'Or": "Rede Dor",
     "Movida": "Movida",
     "Vamos": "Vamos",
+    "JSL": "JSL",
 }
 
 
@@ -190,6 +191,11 @@ EMPRESAS = {
         "ticker": "VAMO3",
         "setor": "Locação de Caminhões e Máquinas",
         "pasta": _pasta_empresa("Vamos"),
+    },
+    "JSL": {
+        "ticker": "JSLG3",
+        "setor": "Logística",
+        "pasta": _pasta_empresa("JSL"),
     },
 }
 

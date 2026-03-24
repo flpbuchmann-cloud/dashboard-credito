@@ -113,6 +113,25 @@ empresas:
     status: "ativo"
 
 
+  - nome: "JSL"
+    ticker: "JSLG3"
+    setor: "Logística"
+
+    tem_cvm: true
+    nome_cvm: "JSL S.A."
+
+    url_ri: "https://ri.jsl.com.br/central-de-resultados/"
+    categorias_release:
+      - "resultados-release"
+    categorias_dfp_itr:
+      - "resultados-itr"
+
+    pasta: "G:/Meu Drive/Análise de Crédito/JSL"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "ativo"
+
+
   # ---- Template para nova empresa (copie e preencha) ----
 
   # - nome: "Nome da Empresa"
