@@ -618,9 +618,9 @@ def main():
             with open(caminho_quali, "r", encoding="utf-8") as f:
                 conteudo_quali = f.read()
 
-        # Editor disponível para admins
+        # Editor disponível para admins apenas no localhost
         is_admin = st.session_state.get("user_role") == "admin"
-        if is_admin:
+        if is_admin and not IS_DEPLOYED:
             modo_quali = st.radio(
                 "Modo",
                 ["Visualizar", "Editar"],
@@ -1218,8 +1218,8 @@ def main():
                     else:
                         st.warning("Nenhum cronograma extraído.")
 
-        # Input manual de cronograma (admin)
-        if is_admin_cron:
+        # Input manual de cronograma (admin, apenas localhost)
+        if is_admin_cron and not IS_DEPLOYED:
             with st.expander("Inserir/Editar cronograma manualmente", expanded=False):
                 st.caption(
                     "Use quando o cronograma não pode ser extraído automaticamente dos PDFs "
