@@ -614,98 +614,94 @@ def main():
                 conteudo_quali = f.read()
 
         if conteudo_quali.strip():
-                titulos = _extrair_titulos(conteudo_quali)
+            titulos = _extrair_titulos(conteudo_quali)
 
-                # Sumário clicável via JS que busca headings no DOM pai do Streamlit
-                if titulos:
-                    import json as _json
-                    titulos_js = _json.dumps([
-                        {"nivel": n, "texto": t}
-                        for n, t, s in titulos
-                    ], ensure_ascii=False)
+            # Sumário clicável via JS que busca headings no DOM pai do Streamlit
+            if titulos:
+                import json as _json
+                titulos_js = _json.dumps([
+                    {"nivel": n, "texto": t}
+                    for n, t, s in titulos
+                ], ensure_ascii=False)
 
-                    # Calcular altura do TOC baseado no número de títulos
-                    toc_height = 60 + len(titulos) * 28
+                # Calcular altura do TOC baseado no número de títulos
+                toc_height = 60 + len(titulos) * 28
 
-                    toc_component = f"""
-                    <style>
-                        body {{ margin: 0; padding: 0; overflow: hidden; }}
-                        #toc {{ background:#f8f9fa; padding:12px 20px; border-radius:8px; border-left:4px solid #1f77b4; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }}
-                        #toc p.title {{ font-weight:bold; font-size:16px; margin:0 0 8px 0; }}
-                        #toc a {{ text-decoration:none; cursor:pointer; display:block; padding:2px 0; }}
-                        #toc a:hover {{ text-decoration: underline; }}
-                        #toc .h1-link {{ color:#1f77b4; font-weight:bold; font-size:15px; margin:4px 0; }}
-                        #toc .h2-link {{ color:#555; font-size:14px; margin:2px 0; padding-left:20px; }}
-                    </style>
-                    <div id="toc">
-                        <p class="title">📑 Sumário</p>
-                    </div>
-                    <script>
-                    (function() {{
-                        var titulos = {titulos_js};
-                        var toc = document.getElementById('toc');
+                toc_component = f"""
+                <style>
+                    body {{ margin: 0; padding: 0; overflow: hidden; }}
+                    #toc {{ background:#f8f9fa; padding:12px 20px; border-radius:8px; border-left:4px solid #1f77b4; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }}
+                    #toc p.title {{ font-weight:bold; font-size:16px; margin:0 0 8px 0; }}
+                    #toc a {{ text-decoration:none; cursor:pointer; display:block; padding:2px 0; }}
+                    #toc a:hover {{ text-decoration: underline; }}
+                    #toc .h1-link {{ color:#1f77b4; font-weight:bold; font-size:15px; margin:4px 0; }}
+                    #toc .h2-link {{ color:#555; font-size:14px; margin:2px 0; padding-left:20px; }}
+                </style>
+                <div id="toc">
+                    <p class="title">📑 Sumário</p>
+                </div>
+                <script>
+                (function() {{
+                    var titulos = {titulos_js};
+                    var toc = document.getElementById('toc');
 
-                        // Acessar o documento principal do Streamlit (fora dos iframes)
-                        function getMainDoc() {{
+                    function getMainDoc() {{
+                        try {{
+                            var doc = window.parent.document;
+                            return doc;
+                        }} catch(e) {{ return null; }}
+                    }}
+
+                    function scrollToHeading(texto, tag) {{
+                        var doc = getMainDoc();
+                        if (!doc) return;
+
+                        var selectors = 'h1, h2, h3, [data-testid="stMarkdown"] h1, [data-testid="stMarkdown"] h2';
+                        var headings = doc.querySelectorAll(selectors);
+
+                        for (var i = 0; i < headings.length; i++) {{
+                            var hText = headings[i].textContent.trim();
+                            if (hText === texto.trim()) {{
+                                headings[i].scrollIntoView({{behavior: 'smooth', block: 'start'}});
+                                return;
+                            }}
+                        }}
+
+                        var iframes = doc.querySelectorAll('iframe');
+                        for (var j = 0; j < iframes.length; j++) {{
                             try {{
-                                var doc = window.parent.document;
-                                // Streamlit usa uma seção .main para o conteúdo
-                                return doc;
-                            }} catch(e) {{ return null; }}
-                        }}
-
-                        function scrollToHeading(texto, tag) {{
-                            var doc = getMainDoc();
-                            if (!doc) return;
-
-                            // Buscar em todos os headings h1-h3 dentro do conteúdo Streamlit
-                            var selectors = 'h1, h2, h3, [data-testid="stMarkdown"] h1, [data-testid="stMarkdown"] h2';
-                            var headings = doc.querySelectorAll(selectors);
-
-                            for (var i = 0; i < headings.length; i++) {{
-                                var hText = headings[i].textContent.trim();
-                                if (hText === texto.trim()) {{
-                                    headings[i].scrollIntoView({{behavior: 'smooth', block: 'start'}});
-                                    return;
-                                }}
-                            }}
-
-                            // Fallback: buscar em iframes (caso o conteúdo esteja em outro iframe)
-                            var iframes = doc.querySelectorAll('iframe');
-                            for (var j = 0; j < iframes.length; j++) {{
-                                try {{
-                                    var iDoc = iframes[j].contentDocument || iframes[j].contentWindow.document;
-                                    var iHeadings = iDoc.querySelectorAll('h1, h2, h3');
-                                    for (var k = 0; k < iHeadings.length; k++) {{
-                                        if (iHeadings[k].textContent.trim() === texto.trim()) {{
-                                            iframes[j].scrollIntoView({{behavior: 'smooth', block: 'start'}});
-                                            return;
-                                        }}
+                                var iDoc = iframes[j].contentDocument || iframes[j].contentWindow.document;
+                                var iHeadings = iDoc.querySelectorAll('h1, h2, h3');
+                                for (var k = 0; k < iHeadings.length; k++) {{
+                                    if (iHeadings[k].textContent.trim() === texto.trim()) {{
+                                        iframes[j].scrollIntoView({{behavior: 'smooth', block: 'start'}});
+                                        return;
                                     }}
-                                }} catch(e) {{}}
-                            }}
+                                }}
+                            }} catch(e) {{}}
                         }}
+                    }}
 
-                        titulos.forEach(function(t) {{
-                            var a = document.createElement('a');
-                            a.textContent = t.texto;
-                            a.className = t.nivel === 'h1' ? 'h1-link' : 'h2-link';
-                            a.addEventListener('click', function(e) {{
-                                e.preventDefault();
-                                scrollToHeading(t.texto, t.nivel === 'h1' ? 'H1' : 'H2');
-                            }});
-                            toc.appendChild(a);
+                    titulos.forEach(function(t) {{
+                        var a = document.createElement('a');
+                        a.textContent = t.texto;
+                        a.className = t.nivel === 'h1' ? 'h1-link' : 'h2-link';
+                        a.addEventListener('click', function(e) {{
+                            e.preventDefault();
+                            scrollToHeading(t.texto, t.nivel === 'h1' ? 'H1' : 'H2');
                         }});
-                    }})();
-                    </script>
-                    """
-                    st_components.html(toc_component, height=toc_height, scrolling=False)
-                    st.markdown("---")
+                        toc.appendChild(a);
+                    }});
+                }})();
+                </script>
+                """
+                st_components.html(toc_component, height=toc_height, scrolling=False)
+                st.markdown("---")
 
-                # Renderizar conteúdo via st.markdown (suporta tabelas, negrito, etc.)
-                st.markdown(conteudo_quali, unsafe_allow_html=True)
-            else:
-                st.info("Nenhuma análise qualitativa registrada.")
+            # Renderizar conteúdo via st.markdown (suporta tabelas, negrito, etc.)
+            st.markdown(conteudo_quali, unsafe_allow_html=True)
+        else:
+            st.info("Nenhuma análise qualitativa registrada.")
 
     # =================================================================
     # TAB: ATUALIZAÇÕES (log cronológico de eventos)
