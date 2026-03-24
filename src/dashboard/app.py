@@ -613,104 +613,7 @@ def main():
             with open(caminho_quali, "r", encoding="utf-8") as f:
                 conteudo_quali = f.read()
 
-        # Alternar entre edição e visualização (edição só disponível localmente)
-        if IS_DEPLOYED:
-            modo_quali = "Visualizar"
-        else:
-            modo_quali = st.radio(
-                "Modo",
-                ["Visualizar", "Editar"],
-                horizontal=True,
-                key="modo_quali",
-            )
-
-        if modo_quali == "Editar":
-            # Referência rápida de Markdown
-            with st.expander("📖 Referência Markdown (títulos, tabelas, imagens...)", expanded=False):
-                st.markdown("""
-**Títulos:**
-```
-# Título 1
-## Título 2
-### Título 3
-```
-
-**Formatação:**
-```
-**negrito**, *itálico*, ~~riscado~~
-```
-
-**Listas:**
-```
-- Item 1
-- Item 2
-  - Sub-item
-
-1. Primeiro
-2. Segundo
-```
-
-**Tabelas:**
-```
-| Coluna A | Coluna B | Coluna C |
-|----------|----------|----------|
-| Valor 1  | Valor 2  | Valor 3  |
-| Valor 4  | Valor 5  | Valor 6  |
-```
-
-Alinhamento nas tabelas:
-```
-| Esquerda | Centro   | Direita  |
-|:---------|:--------:|---------:|
-| texto    | texto    | texto    |
-```
-
-**Imagens:**
-```
-![descrição da imagem](https://url_da_imagem.png)
-```
-
-**Links:**
-```
-[texto do link](https://url.com)
-```
-
-**Citação:**
-```
-> Texto de citação ou destaque
-```
-
-**Linha horizontal:**
-```
----
-```
-""")
-
-            novo_conteudo = st.text_area(
-                "Conteúdo (Markdown)",
-                value=conteudo_quali,
-                height=500,
-                key="editor_quali",
-            )
-            col_save, col_preview = st.columns([1, 5])
-            with col_save:
-                if st.button("💾 Salvar", key="salvar_quali"):
-                    os.makedirs(os.path.dirname(caminho_quali), exist_ok=True)
-                    with open(caminho_quali, "w", encoding="utf-8") as f:
-                        f.write(novo_conteudo)
-                    st.success("Análise qualitativa salva!")
-                    st.rerun()
-
-            # Preview ao vivo
-            if novo_conteudo.strip():
-                st.markdown("---")
-                st.markdown("**Preview:**")
-                titulos_preview = _extrair_titulos(novo_conteudo)
-                conteudo_com_ancoras = _injetar_ancoras(novo_conteudo, titulos_preview)
-                st.markdown(conteudo_com_ancoras, unsafe_allow_html=True)
-        else:
-            # Modo visualização
-            if conteudo_quali.strip():
+        if conteudo_quali.strip():
                 titulos = _extrair_titulos(conteudo_quali)
 
                 # Sumário clicável via JS que busca headings no DOM pai do Streamlit
@@ -802,7 +705,7 @@ Alinhamento nas tabelas:
                 # Renderizar conteúdo via st.markdown (suporta tabelas, negrito, etc.)
                 st.markdown(conteudo_quali, unsafe_allow_html=True)
             else:
-                st.info("Nenhuma análise qualitativa registrada. Clique em **Editar** para começar.")
+                st.info("Nenhuma análise qualitativa registrada.")
 
     # =================================================================
     # TAB: ATUALIZAÇÕES (log cronológico de eventos)
