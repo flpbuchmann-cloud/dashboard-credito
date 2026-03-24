@@ -151,6 +151,25 @@ empresas:
     status: "ativo"
 
 
+  - nome: "Direcional"
+    ticker: "DIRR3"
+    setor: "Construção Civil / Incorporação"
+
+    tem_cvm: true
+    nome_cvm: "DIRECIONAL ENGENHARIA SA"
+
+    url_ri: "https://ri.direcional.com.br/informacoes-financeiras/central-de-resultados/"
+    categorias_release:
+      - "central_de_resultados_release_de_resultados"
+    categorias_dfp_itr:
+      - "central_de_resultados_itrdfp"
+
+    pasta: "G:/Meu Drive/Análise de Crédito/Direcional"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "ativo"
+
+
   # ---- Template para nova empresa (copie e preencha) ----
 
   # - nome: "Nome da Empresa"

@@ -136,6 +136,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["central_de_resultados_demonstracoes_financeras_itrdfp"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/JBS",
     },
+    "Direcional": {
+        "nome_cvm": "DIRECIONAL ENGENHARIA SA",
+        "url_ri": "https://ri.direcional.com.br/informacoes-financeiras/central-de-resultados/",
+        "categorias_release": ["central_de_resultados_release_de_resultados"],
+        "categorias_dfp_itr": ["central_de_resultados_itrdfp"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Direcional",
+    },
 }
 
 

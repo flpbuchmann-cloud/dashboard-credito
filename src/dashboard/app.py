@@ -69,6 +69,7 @@ _PASTA_DEPLOY = {
     "Vamos": "Vamos",
     "JSL": "JSL",
     "JBS": "JBS",
+    "Direcional": "Direcional",
 }
 
 
@@ -202,6 +203,11 @@ EMPRESAS = {
         "ticker": "JBSS3",
         "setor": "Proteína / Frigoríficos",
         "pasta": _pasta_empresa("JBS"),
+    },
+    "Direcional": {
+        "ticker": "DIRR3",
+        "setor": "Construção Civil / Incorporação",
+        "pasta": _pasta_empresa("Direcional"),
     },
 }
 
