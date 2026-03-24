@@ -51,6 +51,68 @@ def _pasta_empresa(nome_pasta: str) -> str:
         return os.path.join(DEPLOY_DATA_DIR, nome_pasta)
     return f"G:/Meu Drive/Análise de Crédito/{nome_pasta}"
 
+
+# Mapeamento nome da empresa → nome da pasta no deploy
+_PASTA_DEPLOY = {
+    "CSN Mineração": "CSN Mineração",
+    "CSN - Companhia Siderurgica Nacional": "CSN Siderurgica",
+    "Minerva Foods": "Minerva",
+    "Plano & Plano": "Plano e Plano",
+    "Klabin": "Klabin",
+    "Eneva": "Eneva",
+    "Cemig": "Cemig",
+    "Equatorial": "Equatorial",
+    "Brava Energia": "Brava Energia",
+    "Raízen": "Raizen",
+    "Rede D'Or": "Rede Dor",
+    "Movida": "Movida",
+}
+
+
+def _sync_para_deploy(caminho_local: str, empresa_selecionada: str):
+    """
+    Copia arquivo salvo localmente para o diretório de deploy (data/empresas/)
+    e faz commit+push automático para o dashboard hospedado.
+    """
+    if IS_DEPLOYED:
+        return  # No deploy, não precisa sincronizar
+
+    nome_pasta = _PASTA_DEPLOY.get(empresa_selecionada)
+    if not nome_pasta:
+        return
+
+    pasta_local = f"G:/Meu Drive/Análise de Crédito/{nome_pasta}"
+    # Determinar caminho relativo dentro da pasta da empresa
+    try:
+        rel = os.path.relpath(caminho_local, pasta_local)
+    except ValueError:
+        return
+
+    destino = os.path.join(DEPLOY_DATA_DIR, nome_pasta, rel)
+    os.makedirs(os.path.dirname(destino), exist_ok=True)
+
+    import shutil
+    shutil.copy2(caminho_local, destino)
+
+    # Auto commit + push
+    try:
+        import subprocess
+        subprocess.run(
+            ["git", "add", destino],
+            cwd=PROJECT_ROOT, capture_output=True, timeout=10,
+        )
+        subprocess.run(
+            ["git", "commit", "-m", f"Sync {nome_pasta}/{rel} from localhost"],
+            cwd=PROJECT_ROOT, capture_output=True, timeout=10,
+        )
+        subprocess.run(
+            ["git", "push"],
+            cwd=PROJECT_ROOT, capture_output=True, timeout=30,
+        )
+    except Exception:
+        pass  # Falha silenciosa — sync local foi feito, push é best-effort
+
+
 # =========================================================================
 # CONFIGURAÇÃO
 # =========================================================================
@@ -641,7 +703,8 @@ def main():
                 os.makedirs(os.path.dirname(caminho_quali), exist_ok=True)
                 with open(caminho_quali, "w", encoding="utf-8") as f:
                     f.write(novo_conteudo)
-                st.success("Análise qualitativa salva!")
+                _sync_para_deploy(caminho_quali, empresa_selecionada)
+                st.success("Análise qualitativa salva e sincronizada!")
                 st.rerun()
         elif conteudo_quali.strip():
             titulos = _extrair_titulos(conteudo_quali)
@@ -781,7 +844,8 @@ def main():
                     os.makedirs(os.path.dirname(caminho_atualiz), exist_ok=True)
                     with open(caminho_atualiz, "w", encoding="utf-8") as f:
                         json.dump(atualizacoes, f, ensure_ascii=False, indent=2)
-                    st.success("Atualização registrada!")
+                    _sync_para_deploy(caminho_atualiz, empresa_selecionada)
+                    st.success("Atualização registrada e sincronizada!")
                     st.rerun()
 
         # Exibir atualizações
@@ -823,6 +887,7 @@ def main():
                         atualizacoes.pop(idx)
                         with open(caminho_atualiz, "w", encoding="utf-8") as f:
                             json.dump(atualizacoes, f, ensure_ascii=False, indent=2)
+                        _sync_para_deploy(caminho_atualiz, empresa_selecionada)
                         st.rerun()
 
                 st.markdown("---")
@@ -1214,7 +1279,8 @@ def main():
                     cronogramas = extrair_cronogramas_pasta(pasta_itr)
                     if cronogramas:
                         salvar_cronogramas(cronogramas, caminho_cronogramas)
-                        st.success(f"{len(cronogramas)} cronogramas extraídos e salvos.")
+                        _sync_para_deploy(caminho_cronogramas, empresa_selecionada)
+                        st.success(f"{len(cronogramas)} cronogramas extraídos e sincronizados.")
                     else:
                         st.warning("Nenhum cronograma extraído.")
 
@@ -1272,7 +1338,8 @@ def main():
                         os.makedirs(os.path.dirname(caminho_cronogramas), exist_ok=True)
                         with open(caminho_cronogramas, "w", encoding="utf-8") as f:
                             json.dump(cronogramas, f, ensure_ascii=False, indent=2, default=str)
-                        st.success(f"Cronograma {data_ref_input} salvo!")
+                        _sync_para_deploy(caminho_cronogramas, empresa_selecionada)
+                        st.success(f"Cronograma {data_ref_input} salvo e sincronizado!")
                         st.rerun()
                     else:
                         st.warning("Preencha ao menos um ano de vencimento.")
