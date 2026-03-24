@@ -216,10 +216,11 @@ empresas:
     tem_cvm: true
     nome_cvm: "CYRELA BRAZIL REALTY S.A.EMPREEND E PART"
 
-    # RI site offline - PDFs devem ser baixados manualmente
-    url_ri: ""
-    categorias_release: []
-    categorias_dfp_itr: []
+    url_ri: "https://ri.cyrela.com.br/informacoes-financeiras/central-de-resultados/"
+    categorias_release:
+      - "central_de_resultados_earnings_releases"
+    categorias_dfp_itr:
+      - "central_de_resultados_demonstracoes_financeiras_itr__dfp"
 
     pasta: "G:/Meu Drive/Análise de Crédito/Cyrela"
     ano_inicio: 2021

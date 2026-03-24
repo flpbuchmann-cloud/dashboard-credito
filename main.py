@@ -159,9 +159,9 @@ EMPRESAS = {
     },
     "Cyrela": {
         "nome_cvm": "CYRELA BRAZIL REALTY S.A.EMPREEND E PART",
-        "url_ri": "",
-        "categorias_release": [],
-        "categorias_dfp_itr": [],
+        "url_ri": "https://ri.cyrela.com.br/informacoes-financeiras/central-de-resultados/",
+        "categorias_release": ["central_de_resultados_earnings_releases"],
+        "categorias_dfp_itr": ["central_de_resultados_demonstracoes_financeiras_itr__dfp"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Cyrela",
     },
 }
