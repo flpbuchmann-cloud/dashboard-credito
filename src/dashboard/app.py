@@ -618,7 +618,32 @@ def main():
             with open(caminho_quali, "r", encoding="utf-8") as f:
                 conteudo_quali = f.read()
 
-        if conteudo_quali.strip():
+        # Editor disponível para admins
+        is_admin = st.session_state.get("user_role") == "admin"
+        if is_admin:
+            modo_quali = st.radio(
+                "Modo",
+                ["Visualizar", "Editar"],
+                horizontal=True,
+                key="modo_quali",
+            )
+        else:
+            modo_quali = "Visualizar"
+
+        if modo_quali == "Editar":
+            novo_conteudo = st.text_area(
+                "Conteúdo (Markdown)",
+                value=conteudo_quali,
+                height=500,
+                key="editor_quali",
+            )
+            if st.button("Salvar", key="salvar_quali"):
+                os.makedirs(os.path.dirname(caminho_quali), exist_ok=True)
+                with open(caminho_quali, "w", encoding="utf-8") as f:
+                    f.write(novo_conteudo)
+                st.success("Análise qualitativa salva!")
+                st.rerun()
+        elif conteudo_quali.strip():
             titulos = _extrair_titulos(conteudo_quali)
 
             # Sumário clicável via JS que busca headings no DOM pai do Streamlit
@@ -1175,7 +1200,9 @@ def main():
             with open(caminho_cronogramas, "r", encoding="utf-8") as f:
                 cronogramas = json.load(f)
 
-        # Botão de extração só disponível localmente (precisa dos PDFs + API)
+        # Botão de extração automática (local) + input manual (admin)
+        is_admin_cron = st.session_state.get("user_role") == "admin"
+
         if not IS_DEPLOYED:
             col_btn1, col_btn2 = st.columns([1, 5])
             with col_btn1:
@@ -1190,6 +1217,65 @@ def main():
                         st.success(f"{len(cronogramas)} cronogramas extraídos e salvos.")
                     else:
                         st.warning("Nenhum cronograma extraído.")
+
+        # Input manual de cronograma (admin)
+        if is_admin_cron:
+            with st.expander("Inserir/Editar cronograma manualmente", expanded=False):
+                st.caption(
+                    "Use quando o cronograma não pode ser extraído automaticamente dos PDFs "
+                    "(ex: dados em formato de imagem). Valores em **R$ milhões**."
+                )
+                col_ref, col_caixa = st.columns(2)
+                with col_ref:
+                    data_ref_input = st.text_input(
+                        "Data de referência (AAAA-MM-DD)",
+                        value="2025-12-31",
+                        key="cron_data_ref",
+                    )
+                with col_caixa:
+                    caixa_input = st.number_input(
+                        "Caixa (R$ mi)", value=0.0, step=100.0, key="cron_caixa"
+                    )
+
+                st.markdown("**Vencimentos por ano** (preencha os anos relevantes):")
+                ano_base = int(data_ref_input[:4]) + 1 if len(data_ref_input) >= 4 else 2026
+                cols_anos = st.columns(5)
+                venc_inputs = {}
+                for j in range(10):
+                    ano = ano_base + j
+                    with cols_anos[j % 5]:
+                        val = st.number_input(
+                            f"{ano}", value=0.0, step=100.0,
+                            key=f"cron_{ano}", min_value=0.0,
+                        )
+                        if val > 0:
+                            venc_inputs[str(ano)] = val
+
+                arquivo_input = st.text_input(
+                    "Fonte (ex: Release_4T25.pdf pag.27)",
+                    value="Input manual",
+                    key="cron_arquivo",
+                )
+
+                if st.button("Salvar cronograma", key="btn_salvar_cron"):
+                    if venc_inputs:
+                        novo = {
+                            "data_referencia": data_ref_input,
+                            "caixa": caixa_input * 1_000_000,
+                            "vencimentos": {k: v * 1_000_000 for k, v in venc_inputs.items()},
+                            "divida_total": sum(v * 1_000_000 for v in venc_inputs.values()),
+                            "arquivo": arquivo_input,
+                        }
+                        # Substituir se já existe para mesma data, senão adicionar
+                        cronogramas = [c for c in cronogramas if c.get("data_referencia") != data_ref_input]
+                        cronogramas.append(novo)
+                        os.makedirs(os.path.dirname(caminho_cronogramas), exist_ok=True)
+                        with open(caminho_cronogramas, "w", encoding="utf-8") as f:
+                            json.dump(cronogramas, f, ensure_ascii=False, indent=2, default=str)
+                        st.success(f"Cronograma {data_ref_input} salvo!")
+                        st.rerun()
+                    else:
+                        st.warning("Preencha ao menos um ano de vencimento.")
 
         if cronogramas:
             recentes = sorted(cronogramas, key=lambda c: c.get("data_referencia", ""), reverse=True)[:3]
