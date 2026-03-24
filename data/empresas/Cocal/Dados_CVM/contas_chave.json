@@ -27,8 +27,8 @@
     "contas": {
       "ativo_total": 9210080000,
       "ativo_circulante": 3521647000,
-      "caixa": 82374000,
-      "aplicacoes_financeiras_cp": 1752188000,
+      "caixa": 1834562000,
+      "aplicacoes_financeiras_cp": 0,
       "contas_a_receber": 54560000,
       "estoques_cp": 677736000,
       "ativo_nao_circulante": 5688433000,
@@ -82,8 +82,8 @@
     "contas": {
       "ativo_total": 9393069000,
       "ativo_circulante": 3845539000,
-      "caixa": 63513000,
-      "aplicacoes_financeiras_cp": 2231438000,
+      "caixa": 2294951000,
+      "aplicacoes_financeiras_cp": 0,
       "contas_a_receber": 38942000,
       "estoques_cp": 424578000,
       "ativo_nao_circulante": 5547530000,
