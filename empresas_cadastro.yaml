@@ -247,6 +247,23 @@ empresas:
     status: "ativo"
 
 
+  - nome: "Cocal"
+    ticker: "N/A"
+    setor: "Sucroenergético"
+
+    tem_cvm: false
+    nome_cvm: ""
+
+    url_ri: ""
+    categorias_release: []
+    categorias_dfp_itr: []
+
+    pasta: "G:/Meu Drive/Análise de Crédito/Cocal"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "pendente"
+
+
   # ---- Template para nova empresa (copie e preencha) ----
 
   # - nome: "Nome da Empresa"

@@ -74,6 +74,7 @@ _PASTA_DEPLOY = {
     "Moura Dubeux": "Moura Dubeux",
     "Cyrela": "Cyrela",
     "Log CP": "Log CP",
+    "Cocal": "Cocal",
 }
 
 
@@ -232,6 +233,11 @@ EMPRESAS = {
         "ticker": "LOGG3",
         "setor": "Galpões Logísticos",
         "pasta": _pasta_empresa("Log CP"),
+    },
+    "Cocal": {
+        "ticker": "N/A",
+        "setor": "Sucroenergético",
+        "pasta": _pasta_empresa("Cocal"),
     },
 }
 
