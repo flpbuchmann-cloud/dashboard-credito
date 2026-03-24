@@ -72,6 +72,7 @@ _PASTA_DEPLOY = {
     "Direcional": "Direcional",
     "Aegea": "Aegea",
     "Moura Dubeux": "Moura Dubeux",
+    "Cyrela": "Cyrela",
 }
 
 
@@ -220,6 +221,11 @@ EMPRESAS = {
         "ticker": "MDNE3",
         "setor": "Construção Civil / Incorporação",
         "pasta": _pasta_empresa("Moura Dubeux"),
+    },
+    "Cyrela": {
+        "ticker": "CYRE3",
+        "setor": "Construção Civil / Incorporação",
+        "pasta": _pasta_empresa("Cyrela"),
     },
 }
 

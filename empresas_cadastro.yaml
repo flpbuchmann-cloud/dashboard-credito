@@ -209,6 +209,24 @@ empresas:
     status: "ativo"
 
 
+  - nome: "Cyrela"
+    ticker: "CYRE3"
+    setor: "Construção Civil / Incorporação"
+
+    tem_cvm: true
+    nome_cvm: "CYRELA BRAZIL REALTY S.A.EMPREEND E PART"
+
+    # RI site offline - PDFs devem ser baixados manualmente
+    url_ri: ""
+    categorias_release: []
+    categorias_dfp_itr: []
+
+    pasta: "G:/Meu Drive/Análise de Crédito/Cyrela"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "ativo"
+
+
   # ---- Template para nova empresa (copie e preencha) ----
 
   # - nome: "Nome da Empresa"

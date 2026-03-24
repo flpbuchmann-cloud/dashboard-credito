@@ -157,6 +157,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["itr", "dfp"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Moura Dubeux",
     },
+    "Cyrela": {
+        "nome_cvm": "CYRELA BRAZIL REALTY S.A.EMPREEND E PART",
+        "url_ri": "",
+        "categorias_release": [],
+        "categorias_dfp_itr": [],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Cyrela",
+    },
 }
 
 
