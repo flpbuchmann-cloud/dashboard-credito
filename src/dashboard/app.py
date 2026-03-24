@@ -68,6 +68,7 @@ _PASTA_DEPLOY = {
     "Movida": "Movida",
     "Vamos": "Vamos",
     "JSL": "JSL",
+    "JBS": "JBS",
 }
 
 
@@ -196,6 +197,11 @@ EMPRESAS = {
         "ticker": "JSLG3",
         "setor": "Logística",
         "pasta": _pasta_empresa("JSL"),
+    },
+    "JBS": {
+        "ticker": "JBSS3",
+        "setor": "Proteína / Frigoríficos",
+        "pasta": _pasta_empresa("JBS"),
     },
 }
 

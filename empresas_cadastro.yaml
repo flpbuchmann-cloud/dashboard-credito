@@ -132,6 +132,25 @@ empresas:
     status: "ativo"
 
 
+  - nome: "JBS"
+    ticker: "JBSS3"
+    setor: "Proteína / Frigoríficos"
+
+    tem_cvm: true
+    nome_cvm: "JBS SA"
+
+    url_ri: "https://ir.jbsglobal.com/pt-br/resultados-e-apresentacoes/central-de-resultados/"
+    categorias_release:
+      - "central_de_resultados_release_de_resultados"
+    categorias_dfp_itr:
+      - "central_de_resultados_demonstracoes_financeras_itrdfp"
+
+    pasta: "G:/Meu Drive/Análise de Crédito/JBS"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "ativo"
+
+
   # ---- Template para nova empresa (copie e preencha) ----
 
   # - nome: "Nome da Empresa"
