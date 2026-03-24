@@ -52,6 +52,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["central_de_downloads_central_de_downloads"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Minerva",
     },
+    "Klabin": {
+        "nome_cvm": "KLABIN S.A.",
+        "url_ri": "https://ri.klabin.com.br/informacoes-financeiras/central-de-resultados/",
+        "categorias_release": ["central_de_resultados_releases_de_resultados"],
+        "categorias_dfp_itr": ["central_de_resultados_demonstracoes_financeiras_itrdfp"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Klabin",
+    },
     "Eneva": {
         "nome_cvm": "ENEVA S.A.",
         "url_ri": "https://ri.eneva.com.br/informacoes-financeiras/central-de-resultados/",
@@ -93,6 +100,13 @@ EMPRESAS = {
         "categorias_release": ["central-release"],
         "categorias_dfp_itr": ["central-itr-dfp"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/CSN Siderurgica",
+    },
+    "Rede D'Or": {
+        "nome_cvm": "REDE D'OR SÃO LUIZ S.A.",
+        "url_ri": "https://ri.rededorsaoluiz.com.br/informacoes-financeiras/central-de-resultados/",
+        "categorias_release": ["relatorio-de-resultados"],
+        "categorias_dfp_itr": ["demonstracoes-financeiras"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Rede Dor",
     },
 }
 

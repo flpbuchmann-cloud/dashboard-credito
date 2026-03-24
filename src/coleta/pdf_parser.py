@@ -55,7 +55,7 @@ def _limpar_numero(s: str) -> float | None:
 
 def _extrair_caixa(pdf: pdfplumber.PDF) -> float | None:
     """Extrai Caixa e Equivalentes do balanço."""
-    for page in pdf.pages[:20]:
+    for page in pdf.pages[:70]:
         text = page.extract_text() or ""
         for line in text.split('\n'):
             # Formato 1: conta "1.01.01" + Caixa
@@ -95,6 +95,8 @@ def _parse_tabela_por_ano(pdf: pdfplumber.PDF) -> dict | None:
             if i + 1 < len(pdf.pages):
                 paginas_candidatas.add(i + 1)
 
+    melhor = None
+    melhor_total = 0
     for idx in sorted(paginas_candidatas):
         text = pdf.pages[idx].extract_text() or ""
         lines = text.split('\n')
@@ -106,9 +108,39 @@ def _parse_tabela_por_ano(pdf: pdfplumber.PDF) -> dict | None:
             match_ano = re.match(r'^\s*(20[2-3]\d)\s+', line)
             match_apos = re.match(r'^\s*[Aa]p[óo]s\s+(20[2-3]\d)\s+', line)
 
-            if match_ano or match_apos:
+            # Padrão: faixa de anos "2030 - 2033 9 .763.981" ou "2032a 2045 ..."
+            match_faixa = re.match(r'^\s*(20[2-3]\d)\s*[-–]\s*(20[2-4]\d)\s+', line)
+            if not match_faixa:
+                match_faixa = re.match(r'^\s*(20[2-4]\d)\s*a\s+(20[2-5]\d)\s+', line)
+
+            if match_ano or match_apos or match_faixa:
+                # Remover o prefixo (ano/faixa) antes de limpar espaços nos números
+                # para evitar que o ano se concatene com o valor
+                if match_faixa:
+                    resto = line[match_faixa.end():]
+                    ano_label = match_faixa.group(2)  # último ano da faixa
+                elif match_apos:
+                    resto = line[match_apos.end():]
+                    ano_label = None
+                else:
+                    resto = line[match_ano.end():]
+                    ano_label = match_ano.group(1)
+
+                # Se a linha tem colunas duplicadas (individual + consolidado),
+                # pegar apenas a última coluna (após o último ano repetido)
+                dup = re.search(r'(20[2-4]\d)\s+', resto)
+                if dup:
+                    # Há outro ano no resto — usar a parte após ele
+                    resto = resto[dup.end():]
+
+                # Também tratar "2032a 2045" como faixa (sem o hífen)
+                faixa_a = re.match(r'^a\s+(20[2-4]\d)\s+', resto)
+                if faixa_a:
+                    ano_label = faixa_a.group(1)
+                    resto = resto[faixa_a.end():]
+
                 # Limpar espaços espúrios nos números
-                limpo = line
+                limpo = resto
                 limpo = re.sub(r'(\d)\s+(\d)', r'\1\2', limpo)
                 limpo = re.sub(r'(\d)\s+\.', r'\1.', limpo)
                 limpo = re.sub(r'\.\s+(\d)', r'.\1', limpo)
@@ -125,14 +157,18 @@ def _parse_tabela_por_ano(pdf: pdfplumber.PDF) -> dict | None:
 
                     if match_apos:
                         vencimentos["longo_prazo"] = total * 1000
+                    elif match_faixa:
+                        vencimentos[ano_label] = total * 1000
                     else:
-                        ano = match_ano.group(1)
-                        vencimentos[ano] = total * 1000
+                        vencimentos[ano_label] = total * 1000
 
         if len(vencimentos) >= 3:
-            return vencimentos
+            total_val = sum(vencimentos.values())
+            if melhor is None or total_val > melhor_total:
+                melhor = vencimentos
+                melhor_total = total_val
 
-    return None
+    return melhor
 
 
 # ---------------------------------------------------------------------------
@@ -250,6 +286,63 @@ def _parse_tabela_faixas(pdf: pdfplumber.PDF) -> dict | None:
 
 
 # ---------------------------------------------------------------------------
+# Parser: cronograma em Release de Resultados
+#   Formato: gráfico de barras com anos e valores em texto
+#   Ex: "Caixa⁽²⁾ 23.717"
+#       "2026 369"
+#       "2027 3.516"
+#       "2036-45 2.313"
+# ---------------------------------------------------------------------------
+
+def _parse_release_cronograma(pdf: pdfplumber.PDF) -> tuple[dict | None, float | None]:
+    """
+    Extrai cronograma de amortização de um Release de Resultados.
+    Retorna (vencimentos, caixa) — ambos podem ser None.
+    """
+    for page in pdf.pages:
+        text = page.extract_text() or ""
+        if "cronograma" not in text.lower() or "amortiza" not in text.lower():
+            continue
+
+        lines = text.split('\n')
+        vencimentos = {}
+        caixa = None
+
+        for line in lines:
+            # Caixa: "Caixa⁽²⁾ 23.717" ou "Caixa(2) 23.717"
+            match_caixa = re.search(r'[Cc]aixa[^\d]*?([\d]+(?:\.[\d]+)*)\s*$', line)
+            if match_caixa:
+                v = _limpar_numero(match_caixa.group(1))
+                if v and v > 100:
+                    caixa = v * 1_000_000  # valores em milhões no release
+
+            # Ano simples (pode estar no meio da linha): "2026 369"
+            # Usar findall para pegar todos os pares ano+valor na linha
+            for match_ano in re.finditer(r'(20[2-4]\d)\s+([\d]+(?:\.[\d]+)*)', line):
+                ano = match_ano.group(1)
+                v = _limpar_numero(match_ano.group(2))
+                if v and v > 0 and ano not in vencimentos:
+                    vencimentos[ano] = v * 1_000_000
+
+            # Faixa de anos: "2036-45 2.313" ou "2036-2045 2.313"
+            match_faixa = re.search(
+                r'(20[2-4]\d)\s*[-–]\s*(\d{2,4})\s+([\d]+(?:\.[\d]+)*)', line
+            )
+            if match_faixa:
+                ano_fim = match_faixa.group(2)
+                if len(ano_fim) == 2:
+                    ano_fim = match_faixa.group(1)[:2] + ano_fim
+                v = _limpar_numero(match_faixa.group(3))
+                if v and v > 0:
+                    vencimentos[ano_fim] = v * 1_000_000
+
+        if len(vencimentos) >= 3:
+            return vencimentos, caixa
+
+    return None, None
+
+
+# ---------------------------------------------------------------------------
 # Claude API fallback
 # ---------------------------------------------------------------------------
 
@@ -320,12 +413,25 @@ def extrair_cronograma_amortizacao(
     print(f"[PDFParser] {nome}...", end=" ")
 
     pdf = pdfplumber.open(caminho_pdf)
-    caixa = _extrair_caixa(pdf)
+    caixa = None
+    vencimentos = None
+    is_release = any(kw in nome.lower() for kw in ["relat", "release", "resultado"])
+
+    if is_release:
+        # Para Releases, tentar parser específico primeiro
+        vencimentos, caixa_release = _parse_release_cronograma(pdf)
+        if vencimentos:
+            print("OK (release)")
+            caixa = caixa_release
+
+    if not caixa:
+        caixa = _extrair_caixa(pdf)
 
     # Estratégia 1: tabela por ano (anos no início da linha)
-    vencimentos = _parse_tabela_por_ano(pdf)
-    if vencimentos:
-        print("OK (tabela por ano)")
+    if not vencimentos:
+        vencimentos = _parse_tabela_por_ano(pdf)
+        if vencimentos:
+            print("OK (tabela por ano)")
 
     # Estratégia 2: tabela com header de anos (Minerva, etc.)
     if not vencimentos:
@@ -339,7 +445,15 @@ def extrair_cronograma_amortizacao(
         if vencimentos:
             print("OK (tabela faixas)")
 
-    # Estratégia 4: Claude API
+    # Estratégia 4: cronograma em Release de Resultados (fallback para outros PDFs)
+    if not vencimentos:
+        vencimentos, caixa_release = _parse_release_cronograma(pdf)
+        if vencimentos:
+            print("OK (release)")
+            if caixa_release and not caixa:
+                caixa = caixa_release
+
+    # Estratégia 5: Claude API
     if not vencimentos:
         # Extrair texto das páginas com "vencimento"
         textos = []
@@ -396,13 +510,19 @@ def _inferir_data_referencia(nome_arquivo: str) -> str:
 
 
 def extrair_cronogramas_pasta(pasta_pdfs: str, n_recentes: int = 3) -> list[dict]:
-    """Extrai cronograma dos N PDFs mais recentes."""
+    """Extrai cronograma dos N PDFs mais recentes (ITR/DFP + Releases)."""
     import glob
 
     pdfs = sorted(set(
         glob.glob(os.path.join(pasta_pdfs, "ITR*.pdf")) +
         glob.glob(os.path.join(pasta_pdfs, "DFP*.pdf"))
     ))
+
+    # Também incluir Releases na pasta irmã ../Releases/
+    pasta_releases = os.path.join(os.path.dirname(pasta_pdfs.rstrip("/\\")), "Releases")
+    releases = sorted(glob.glob(os.path.join(pasta_releases, "*.pdf")))
+    if releases:
+        pdfs = sorted(set(pdfs + releases))
 
     if not pdfs:
         print(f"[PDFParser] Nenhum PDF em {pasta_pdfs}")
@@ -419,17 +539,33 @@ def extrair_cronogramas_pasta(pasta_pdfs: str, n_recentes: int = 3) -> list[dict
             pdfs_info.append((sort_key, dr, p))
 
     pdfs_info.sort(key=lambda x: x[0], reverse=True)
-    recentes = pdfs_info[:n_recentes]
 
-    print(f"[PDFParser] {len(recentes)}/{len(pdfs)} PDFs")
+    # Agrupar por período (sort_key) — pode haver Release + ITR/DFP para o mesmo trimestre
+    from collections import defaultdict
+    por_periodo = defaultdict(list)
+    for sort_key, dr, path in pdfs_info:
+        por_periodo[sort_key].append((dr, path))
+
+    # Pegar os N períodos mais recentes
+    periodos_recentes = sorted(por_periodo.keys(), reverse=True)[:n_recentes]
+
+    total_candidatos = sum(len(por_periodo[p]) for p in periodos_recentes)
+    print(f"[PDFParser] {total_candidatos} candidatos para {len(periodos_recentes)} períodos")
+
     cronogramas = []
-    for _, dr, path in recentes:
-        try:
-            r = extrair_cronograma_amortizacao(path, dr)
-            if "erro" not in r:
-                cronogramas.append(r)
-        except Exception as e:
-            print(f"[PDFParser] Erro {os.path.basename(path)}: {e}")
+    for periodo in periodos_recentes:
+        melhor = None
+        for dr, path in por_periodo[periodo]:
+            try:
+                r = extrair_cronograma_amortizacao(path, dr)
+                if "erro" not in r:
+                    n_venc = len(r.get("vencimentos", {}))
+                    if melhor is None or n_venc > len(melhor.get("vencimentos", {})):
+                        melhor = r
+            except Exception as e:
+                print(f"[PDFParser] Erro {os.path.basename(path)}: {e}")
+        if melhor:
+            cronogramas.append(melhor)
 
     return cronogramas
 

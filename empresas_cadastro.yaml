@@ -11,23 +11,23 @@
 empresas:
 
   # ---- Exemplo preenchido (CSN Mineração) ----
-  - nome: "CSN - Companhia Siderurgica Nacional"                        # (*) Nome de exibição no dashboard
-    ticker: "CSNA3"                               # (*) Código na B3 (ou "N/A" se não listada)
-    setor: "Siderurgia"                            # (*) Setor de atuação
+  - nome: "Minerva"                        # (*) Nome de exibição no dashboard
+    ticker: "BEEF3"                               # (*) Código na B3 (ou "N/A" se não listada)
+    setor: "Proteína"                            # (*) Setor de atuação
 
     # --- Dados CVM (empresa listada na B3) ---
     tem_cvm: true                                 # (*) true = busca automática na CVM; false = dados manuais
-    nome_cvm: "CIA SIDERURGICA NACIONAL"                     # (~) Razão social na CVM (obrigatório se tem_cvm: true)
+    nome_cvm: "MINERVA S.A"                     # (~) Razão social na CVM (obrigatório se tem_cvm: true)
 
     # --- Site de RI (para download automático de PDFs) ---
-    url_ri: "https://ri.csn.com.br/informacoes-financeiras/central-de-resultados/"
+    url_ri: "https://ri.minervafoods.com/resultados-trimestrais/"
     categorias_release:                           # (~) Categorias de releases no site de RI
       - "central-release"
     categorias_dfp_itr:                           # (~) Categorias de ITR/DFP no site de RI
       - "itr-dfp"
 
     # --- Pastas ---
-    pasta: "G:/Meu Drive/Análise de Crédito/CSN Siderurgica"  # (*) Pasta raiz da empresa
+    pasta: "G:/Meu Drive/Análise de Crédito/Minerva"  # (*) Pasta raiz da empresa
 
     # --- Coleta ---
     ano_inicio: 2021                              # (*) Ano inicial para buscar dados
@@ -35,6 +35,44 @@ empresas:
 
     # --- Status ---
     status: "ativo"                               # ativo | pendente | erro
+
+
+  - nome: "Klabin"
+    ticker: "KLBN11"
+    setor: "Papel e Celulose"
+
+    tem_cvm: true
+    nome_cvm: "KLABIN S.A."
+
+    url_ri: "https://ri.klabin.com.br/informacoes-financeiras/central-de-resultados/"
+    categorias_release:
+      - "central_de_resultados_releases_de_resultados"
+    categorias_dfp_itr:
+      - "central_de_resultados_demonstracoes_financeiras_itrdfp"
+
+    pasta: "G:/Meu Drive/Análise de Crédito/Klabin"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "ativo"
+
+
+  - nome: "Rede D'Or"
+    ticker: "RDOR3"
+    setor: "Saúde"
+
+    tem_cvm: true
+    nome_cvm: "REDE D'OR SÃO LUIZ S.A."
+
+    url_ri: "https://ri.rededorsaoluiz.com.br/informacoes-financeiras/central-de-resultados/"
+    categorias_release:
+      - "relatorio-de-resultados"
+    categorias_dfp_itr:
+      - "demonstracoes-financeiras"
+
+    pasta: "G:/Meu Drive/Análise de Crédito/Rede Dor"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "ativo"
 
 
   # ---- Template para nova empresa (copie e preencha) ----

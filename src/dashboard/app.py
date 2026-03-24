@@ -83,6 +83,11 @@ EMPRESAS = {
         "setor": "Construção Civil / Incorporação",
         "pasta": _pasta_empresa("Plano e Plano"),
     },
+    "Klabin": {
+        "ticker": "KLBN11",
+        "setor": "Papel e Celulose",
+        "pasta": _pasta_empresa("Klabin"),
+    },
     "Eneva": {
         "ticker": "ENEV3",
         "setor": "Energia / Gás e Geração",
@@ -107,6 +112,11 @@ EMPRESAS = {
         "ticker": "RAIZ4",
         "setor": "Energia / Açúcar e Etanol",
         "pasta": _pasta_empresa("Raizen"),
+    },
+    "Rede D'Or": {
+        "ticker": "RDOR3",
+        "setor": "Saúde",
+        "pasta": _pasta_empresa("Rede Dor"),
     },
 }
 
