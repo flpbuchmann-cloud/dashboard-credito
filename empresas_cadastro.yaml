@@ -75,6 +75,25 @@ empresas:
     status: "ativo"
 
 
+  - nome: "Movida"
+    ticker: "MOVI3"
+    setor: "Locação de Veículos"
+
+    tem_cvm: true
+    nome_cvm: "MOVIDA PARTICIPAÇÕES S.A."
+
+    url_ri: "https://ri.movida.com.br/resultados-trimestrais/"
+    categorias_release:
+      - "resultados-resultados"
+    categorias_dfp_itr:
+      - "resultados-itrdfp"
+
+    pasta: "G:/Meu Drive/Análise de Crédito/Movida"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "ativo"
+
+
   # ---- Template para nova empresa (copie e preencha) ----
 
   # - nome: "Nome da Empresa"

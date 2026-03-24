@@ -85,15 +85,27 @@ def _parse_tabela_por_ano(pdf: pdfplumber.PDF) -> dict | None:
     '2026 1 08.615 1 .597.447 1 .706.062'
     A última coluna é o Total (moeda estrangeira + nacional).
     """
-    # Encontrar páginas com contexto de vencimento de dívida
+    # Encontrar páginas candidatas: duas abordagens
+    # 1) Páginas com contexto de dívida (keywords) + vizinhas
+    # 2) Qualquer página que tenha >= 3 linhas começando com ano + números
     paginas_candidatas = set()
     for i, page in enumerate(pdf.pages):
         text = (page.extract_text() or "").lower()
-        if "vencimento" in text and ("empr" in text or "d\xe9bito" in text or "d\xedvida" in text):
+        has_venc = "vencimento" in text
+        has_debt = "empr" in text or "d\xe9bito" in text or "d\xedvida" in text or "debentur" in text
+        if (has_venc and has_debt) or (has_debt and "cronograma" in text):
             paginas_candidatas.add(i)
-            # A tabela pode estar na próxima página
             if i + 1 < len(pdf.pages):
                 paginas_candidatas.add(i + 1)
+            if i - 1 >= 0:
+                paginas_candidatas.add(i - 1)
+
+        # Fallback: detectar diretamente páginas com tabela de anos + valores
+        full_text = page.extract_text() or ""
+        year_lines = sum(1 for l in full_text.split('\n')
+                         if re.match(r'^\s*20[2-4]\d[\s\-–a]', l) and re.search(r'[\d]+(?:\.[\d]{3})', l))
+        if year_lines >= 3:
+            paginas_candidatas.add(i)
 
     melhor = None
     melhor_total = 0
@@ -108,10 +120,10 @@ def _parse_tabela_por_ano(pdf: pdfplumber.PDF) -> dict | None:
             match_ano = re.match(r'^\s*(20[2-3]\d)\s+', line)
             match_apos = re.match(r'^\s*[Aa]p[óo]s\s+(20[2-3]\d)\s+', line)
 
-            # Padrão: faixa de anos "2030 - 2033 9 .763.981" ou "2032a 2045 ..."
+            # Padrão: faixa de anos "2030 - 2033", "2032a 2045", "2031 até 2033"
             match_faixa = re.match(r'^\s*(20[2-3]\d)\s*[-–]\s*(20[2-4]\d)\s+', line)
             if not match_faixa:
-                match_faixa = re.match(r'^\s*(20[2-4]\d)\s*a\s+(20[2-5]\d)\s+', line)
+                match_faixa = re.match(r'^\s*(20[2-4]\d)\s*(?:a|até)\s+(20[2-5]\d)\s+', line)
 
             if match_ano or match_apos or match_faixa:
                 # Remover o prefixo (ano/faixa) antes de limpar espaços nos números

@@ -108,6 +108,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["demonstracoes-financeiras"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Rede Dor",
     },
+    "Movida": {
+        "nome_cvm": "MOVIDA PARTICIPAÇÕES S.A.",
+        "url_ri": "https://ri.movida.com.br/resultados-trimestrais/",
+        "categorias_release": ["resultados-resultados"],
+        "categorias_dfp_itr": ["resultados-itrdfp"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Movida",
+    },
 }
 
 

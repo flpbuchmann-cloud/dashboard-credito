@@ -118,6 +118,11 @@ EMPRESAS = {
         "setor": "Saúde",
         "pasta": _pasta_empresa("Rede Dor"),
     },
+    "Movida": {
+        "ticker": "MOVI3",
+        "setor": "Locação de Veículos",
+        "pasta": _pasta_empresa("Movida"),
+    },
 }
 
 CORES = {
