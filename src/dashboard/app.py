@@ -71,6 +71,7 @@ _PASTA_DEPLOY = {
     "JBS": "JBS",
     "Direcional": "Direcional",
     "Aegea": "Aegea",
+    "Moura Dubeux": "Moura Dubeux",
 }
 
 
@@ -214,6 +215,11 @@ EMPRESAS = {
         "ticker": "N/A",
         "setor": "Saneamento",
         "pasta": _pasta_empresa("Aegea"),
+    },
+    "Moura Dubeux": {
+        "ticker": "MDNE3",
+        "setor": "Construção Civil / Incorporação",
+        "pasta": _pasta_empresa("Moura Dubeux"),
     },
 }
 

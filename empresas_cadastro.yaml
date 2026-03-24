@@ -189,6 +189,26 @@ empresas:
     status: "ativo"
 
 
+  - nome: "Moura Dubeux"
+    ticker: "MDNE3"
+    setor: "Construção Civil / Incorporação"
+
+    tem_cvm: true
+    nome_cvm: "MOURA DUBEUX ENGENHARIA S/A"
+
+    url_ri: "https://ri.mouradubeux.com.br/informacoes-financeiras/central-de-resultados/"
+    categorias_release:
+      - "er_"
+    categorias_dfp_itr:
+      - "itr"
+      - "dfp"
+
+    pasta: "G:/Meu Drive/Análise de Crédito/Moura Dubeux"
+    ano_inicio: 2021
+    ano_fim: null
+    status: "ativo"
+
+
   # ---- Template para nova empresa (copie e preencha) ----
 
   # - nome: "Nome da Empresa"

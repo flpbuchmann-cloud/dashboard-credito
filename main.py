@@ -150,6 +150,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["central-itrdfp"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Aegea",
     },
+    "Moura Dubeux": {
+        "nome_cvm": "MOURA DUBEUX ENGENHARIA S/A",
+        "url_ri": "https://ri.mouradubeux.com.br/informacoes-financeiras/central-de-resultados/",
+        "categorias_release": ["er_"],
+        "categorias_dfp_itr": ["itr", "dfp"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Moura Dubeux",
+    },
 }
 
 
