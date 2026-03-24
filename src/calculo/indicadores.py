@@ -348,36 +348,75 @@ def calcular_indicadores(caminho_json: str) -> pd.DataFrame:
     # Equivale a: Ativo Errático - Passivo Errático
     resultado["fleuriet_t"] = resultado["fleuriet_cdg"] - resultado["fleuriet_ncg"]
 
-    # Classificação Fleuriet (6 tipos) com nota de 1 a 6
-    # Tipo I:   CDG+, NCG-, T+ → Excelente          → Nota 6
-    # Tipo II:  CDG+, NCG+, T+ → Sólida             → Nota 5
-    # Tipo III: CDG+, NCG+, T- → Insatisfatória      → Nota 4
-    # Tipo IV:  CDG-, NCG-, T+ → Alto Risco          → Nota 3
-    # Tipo V:   CDG-, NCG-, T- → Muito Ruim          → Nota 2
-    # Tipo VI:  CDG-, NCG+, T- → Péssima             → Nota 1
+    # Classificação Fleuriet aprimorada (nota 1 a 10)
+    # Combina classificação por sinais (6 tipos) com análise de magnitude:
+    # - CDG/NCG: cobertura do capital de giro permanente sobre a necessidade
+    # - T/Receita: tesouraria relativa ao porte da empresa
+    #
+    # Escala:
+    # 10: CDG+, NCG-, T+ forte (excelente — recebe antes de pagar, folga ampla)
+    #  9: CDG+, NCG-, T+ moderado (excelente — mesma estrutura, menor folga)
+    #  8: CDG+, NCG+, T+ com CDG/NCG > 1.5 (sólida — ampla cobertura)
+    #  7: CDG+, NCG+, T+ com CDG/NCG 1.2-1.5 (sólida — boa cobertura)
+    #  6: CDG+, NCG+, T+ com CDG/NCG 1.0-1.2 (sólida — cobertura justa)
+    #  5: CDG+, NCG+, T- com T/|NCG| > -0.2 (insatisfatória leve)
+    #  4: CDG+, NCG+, T- com T/|NCG| <= -0.2 (insatisfatória severa)
+    #     OU CDG-, NCG-, T+ (alto risco — instável)
+    #  3: CDG-, NCG-, T- (muito ruim)
+    #  2: CDG-, NCG+, T- com T/|NCG| > -0.5 (péssima moderada)
+    #  1: CDG-, NCG+, T- com T/|NCG| <= -0.5 (péssima — risco de insolvência)
     def _classificar_fleuriet(row):
         cdg = row.get("fleuriet_cdg", np.nan)
         ncg = row.get("fleuriet_ncg", np.nan)
         t = row.get("fleuriet_t", np.nan)
+        rec = row.get("receita_liquida", np.nan)
         if pd.isna(cdg) or pd.isna(ncg) or pd.isna(t):
             return np.nan, ""
+
         cdg_pos = cdg >= 0
         ncg_pos = ncg >= 0
         t_pos = t >= 0
+
+        # Razões de magnitude
+        ncg_abs = abs(ncg) if ncg != 0 else 1
+        cdg_ncg = cdg / ncg if ncg > 0 else (2.0 if cdg_pos else -1.0)
+        t_ncg = t / ncg_abs
+
+        # Tipo I: CDG+, NCG-, T+ → Excelente (9-10)
         if cdg_pos and not ncg_pos and t_pos:
-            return 6, "Excelente"
-        elif cdg_pos and ncg_pos and t_pos:
-            return 5, "Sólida"
-        elif cdg_pos and ncg_pos and not t_pos:
+            if t_ncg > 1.5:
+                return 10, "Excelente"
+            return 9, "Excelente"
+
+        # Tipo II: CDG+, NCG+, T+ → Sólida (6-8)
+        if cdg_pos and ncg_pos and t_pos:
+            if cdg_ncg > 1.5:
+                return 8, "Sólida"
+            elif cdg_ncg > 1.2:
+                return 7, "Sólida"
+            return 6, "Sólida"
+
+        # Tipo III: CDG+, NCG+, T- → Insatisfatória (4-5)
+        if cdg_pos and ncg_pos and not t_pos:
+            if t_ncg > -0.2:
+                return 5, "Insatisfatória"
             return 4, "Insatisfatória"
-        elif not cdg_pos and not ncg_pos and t_pos:
-            return 3, "Alto Risco"
-        elif not cdg_pos and not ncg_pos and not t_pos:
-            return 2, "Muito Ruim"
-        elif not cdg_pos and ncg_pos and not t_pos:
+
+        # Tipo IV: CDG-, NCG-, T+ → Alto Risco (4)
+        if not cdg_pos and not ncg_pos and t_pos:
+            return 4, "Alto Risco"
+
+        # Tipo V: CDG-, NCG-, T- → Muito Ruim (3)
+        if not cdg_pos and not ncg_pos and not t_pos:
+            return 3, "Muito Ruim"
+
+        # Tipo VI: CDG-, NCG+, T- → Péssima (1-2)
+        if not cdg_pos and ncg_pos and not t_pos:
+            if t_ncg > -0.5:
+                return 2, "Péssima"
             return 1, "Péssima"
-        else:
-            return np.nan, ""
+
+        return np.nan, ""
 
     notas_tipos = resultado.apply(_classificar_fleuriet, axis=1)
     resultado["fleuriet_nota"] = notas_tipos.apply(lambda x: x[0])

@@ -674,7 +674,7 @@ def main():
     with col7:
         nota_fl = ultimo.get("fleuriet_nota")
         tipo_fl = ultimo.get("fleuriet_tipo", "")
-        st.metric("Nota Fleuriet", f"{nota_fl:.0f}/6" if not pd.isna(nota_fl) else "-")
+        st.metric("Nota Fleuriet", f"{nota_fl:.0f}/10" if not pd.isna(nota_fl) else "-")
         if tipo_fl:
             st.caption(f"**{tipo_fl}**")
 
@@ -1269,16 +1269,16 @@ def main():
             notas = df["fleuriet_nota"].tolist()
             tipos = df["fleuriet_tipo"].tolist() if "fleuriet_tipo" in df.columns else [""] * len(labels)
 
-            # Cores por nota
+            # Cores por nota (escala 1-10)
             cores_nota = []
             for n in notas:
                 if pd.isna(n):
                     cores_nota.append(CORES["cinza"])
-                elif n >= 5:
+                elif n >= 8:
                     cores_nota.append(CORES["verde"])
-                elif n >= 4:
+                elif n >= 6:
                     cores_nota.append(CORES["azul"])
-                elif n >= 3:
+                elif n >= 4:
                     cores_nota.append(CORES["laranja"])
                 else:
                     cores_nota.append(CORES["vermelho"])
@@ -1292,18 +1292,18 @@ def main():
                 textfont=dict(size=9),
             ))
             fig_nota.update_layout(
-                title=dict(text="Evolução da Nota Fleuriet (1-6)", font=dict(size=16)),
+                title=dict(text="Evolução da Nota Fleuriet (1-10)", font=dict(size=16)),
                 height=400,
                 margin=dict(t=50, b=30, l=50, r=20),
-                yaxis=dict(range=[0, 7], dtick=1, gridcolor="#eee"),
+                yaxis=dict(range=[0, 11], dtick=1, gridcolor="#eee"),
                 plot_bgcolor="white",
                 showlegend=False,
             )
-            # Faixas de referência
-            fig_nota.add_hrect(y0=4.5, y1=6.5, fillcolor="green", opacity=0.05, line_width=0)
-            fig_nota.add_hrect(y0=3.5, y1=4.5, fillcolor="blue", opacity=0.05, line_width=0)
-            fig_nota.add_hrect(y0=2.5, y1=3.5, fillcolor="orange", opacity=0.05, line_width=0)
-            fig_nota.add_hrect(y0=0, y1=2.5, fillcolor="red", opacity=0.05, line_width=0)
+            # Faixas de referência (escala 1-10)
+            fig_nota.add_hrect(y0=7.5, y1=10.5, fillcolor="green", opacity=0.05, line_width=0)
+            fig_nota.add_hrect(y0=5.5, y1=7.5, fillcolor="blue", opacity=0.05, line_width=0)
+            fig_nota.add_hrect(y0=3.5, y1=5.5, fillcolor="orange", opacity=0.05, line_width=0)
+            fig_nota.add_hrect(y0=0, y1=3.5, fillcolor="red", opacity=0.05, line_width=0)
             st.plotly_chart(fig_nota, use_container_width=True)
 
         st.markdown("---")
@@ -1730,7 +1730,7 @@ O Modelo Fleuriet é uma forma de avaliar se a empresa tem uma estrutura finance
 olhando para **como ela financia suas operações do dia a dia**. Em vez de olhar apenas se a empresa
 tem mais ativos que passivos (análise estática), ele analisa a **dinâmica** do dinheiro dentro da empresa.
 
-O modelo calcula três números e, a partir deles, dá uma **nota de 1 a 6**:
+O modelo calcula três números e, a partir deles, atribui uma **nota de 1 a 10**. A nota combina a classificação estrutural (sinais de CDG, NCG e T) com a **magnitude** das variáveis — não basta ter tesouraria positiva, importa o quanto ela cobre as necessidades operacionais.
 
 | Sigla | O que significa | Como pensar |
 |:------|:----------------|:------------|
@@ -1738,32 +1738,38 @@ O modelo calcula três números e, a partir deles, dá uma **nota de 1 a 6**:
 | **NCG** (Necessidade de Capital de Giro) | Quanto a empresa precisa de dinheiro amarrado nas operações (clientes que ainda não pagaram + estoque) menos o que os fornecedores estão financiando | "Quanto de dinheiro fica 'preso' no ciclo operacional?" Se negativo, a empresa recebe antes de pagar — ótimo! |
 | **T** (Saldo de Tesouraria) | CDG menos NCG. É o que sobra (ou falta) depois de financiar as operações | "A empresa tem folga de caixa ou está dependendo de empréstimos de curto prazo?" |
 
-**As notas:**
+**As notas (escala 1-10):**
 
-| Nota | Classificação | O que acontece | Em linguagem simples |
-|:----:|:-------------|:---------------|:---------------------|
-| **6** | Excelente | CDG (+), NCG (−), T (+) | A empresa tem folga de longo prazo E recebe dos clientes antes de pagar fornecedores. Situação ideal. |
-| **5** | Sólida | CDG (+), NCG (+), T (+) | A empresa precisa de capital de giro, mas sua folga de longo prazo cobre tudo com sobra. Saudável. |
-| **4** | Insatisfatória | CDG (+), NCG (+), T (−) | A empresa tem folga de longo prazo, mas não é suficiente. Precisa de empréstimos de curto prazo para operar. Sinal de atenção. |
-| **3** | Alto Risco | CDG (−), NCG (−), T (+) | A empresa investe mais do que tem de recursos permanentes. Só não quebra porque recebe antes de pagar. Instável. |
-| **2** | Muito Ruim | CDG (−), NCG (−), T (−) | Tanto a estrutura de longo prazo quanto a tesouraria estão negativas. Vulnerável a qualquer choque. |
-| **1** | Péssima | CDG (−), NCG (+), T (−) | A empresa precisa de capital de giro, não tem folga de longo prazo e depende totalmente de crédito de curto prazo. Risco de insolvência. |
+| Nota | Classificação | Estrutura | Em linguagem simples |
+|:----:|:-------------|:----------|:---------------------|
+| **10** | Excelente | CDG (+), NCG (−), T (+) forte | Situação ideal com ampla folga. A empresa recebe antes de pagar fornecedores e tem sobra abundante de recursos permanentes. |
+| **9** | Excelente | CDG (+), NCG (−), T (+) moderado | Mesma estrutura ideal, com folga menor mas ainda muito confortável. |
+| **8** | Sólida | CDG (+), NCG (+), T (+), CDG/NCG > 1,5x | A empresa precisa de capital de giro, mas seus recursos permanentes cobrem com ampla margem (mais de 1,5x). |
+| **7** | Sólida | CDG (+), NCG (+), T (+), CDG/NCG 1,2-1,5x | Boa cobertura — recursos permanentes cobrem a necessidade operacional com folga razoável. |
+| **6** | Sólida | CDG (+), NCG (+), T (+), CDG/NCG 1,0-1,2x | Cobertura justa — o CDG cobre a NCG por pouco. Qualquer deterioração operacional pode virar nota 5. |
+| **5** | Insatisfatória | CDG (+), NCG (+), T (−) leve | A empresa tem recursos permanentes, mas não o suficiente para cobrir toda a NCG. Depende parcialmente de crédito de curto prazo, porém a deficiência é pequena. |
+| **4** | Insatisfatória/Risco | CDG (+), NCG (+), T (−) severo; OU CDG (−), NCG (−), T (+) | Duas situações: (a) a empresa tem CDG mas a tesouraria está muito negativa — forte dependência de crédito CP; (b) CDG negativo mas operações geram caixa (instável, depende do crescimento). |
+| **3** | Muito Ruim | CDG (−), NCG (−), T (−) | Recursos permanentes insuficientes e tesouraria negativa. Vulnerável a qualquer choque econômico ou operacional. |
+| **2** | Péssima | CDG (−), NCG (+), T (−) moderado | A empresa precisa de capital de giro, não tem folga permanente e depende de crédito de curto prazo. A dependência ainda é parcialmente controlável. |
+| **1** | Péssima | CDG (−), NCG (+), T (−) severo | Pior cenário: alta necessidade de capital de giro sem recursos permanentes, com tesouraria profundamente negativa. Risco iminente de insolvência. |
+
+**Efeito Tesoura:** Quando o Saldo de Tesouraria (T) vai ficando cada vez mais negativo trimestre após trimestre, é um sinal grave de que a empresa está financiando operações permanentes com dívida de curto prazo — como pagar o aluguel com o cheque especial todo mês. Independente da nota atual, uma tendência de queda no T é o principal indicador antecedente de crise financeira.
 
 #### Gráfico: CDG, NCG e Saldo de Tesouraria (barras)
 
 **O que mostra:** Três barras lado a lado para cada trimestre — CDG (azul), NCG (laranja) e Saldo de Tesouraria (verde).
 
-**Como ler:** O CDG (azul) mostra a folga financeira de longo prazo. O NCG (laranja) mostra quanto a empresa precisa de capital preso nas operações. O T (verde) é a diferença entre os dois. Se a barra verde está positiva (acima de zero), a empresa tem sobra de caixa. Se está negativa (abaixo de zero), ela depende de empréstimos de curto prazo para operar. Observe se a barra verde vai ficando cada vez mais negativa — isso é o **Efeito Tesoura**, um sinal grave de deterioração financeira.
+**Como ler:** O CDG (azul) mostra a folga financeira de longo prazo. O NCG (laranja) mostra quanto a empresa precisa de capital preso nas operações. O T (verde) é a diferença entre os dois. Se a barra verde está positiva (acima de zero), a empresa tem sobra de caixa. Se está negativa (abaixo de zero), ela depende de empréstimos de curto prazo para operar. Observe se a barra verde vai ficando cada vez mais negativa — isso é o **Efeito Tesoura**.
 
-**Por que observar:** Este gráfico revela problemas que não aparecem em indicadores tradicionais. Uma empresa pode ter boa alavancagem e bom EBITDA mas estar financiando operações permanentes com dívida de curto prazo — como uma pessoa que paga o aluguel com cartão de crédito todo mês. O Saldo de Tesouraria caindo é frequentemente o primeiro sinal de uma crise financeira futura.
+**Por que observar:** Este gráfico revela problemas que não aparecem em indicadores tradicionais. Uma empresa pode ter boa alavancagem e bom EBITDA mas estar financiando operações permanentes com dívida de curto prazo. O Saldo de Tesouraria caindo é frequentemente o primeiro sinal de uma crise financeira futura.
 
 #### Gráfico: Evolução da Nota Fleuriet (barras coloridas)
 
-**O que mostra:** Uma barra por trimestre com a nota de 1 a 6, colorida de verde (notas 5-6, saudável), azul (nota 4, atenção), laranja (nota 3, risco) a vermelho (notas 1-2, perigo).
+**O que mostra:** Uma barra por trimestre com a nota de 1 a 10, colorida de verde (notas 8-10, saudável), azul (notas 6-7, adequada), laranja (notas 4-5, atenção) a vermelho (notas 1-3, perigo).
 
-**Como ler:** É como um semáforo de saúde financeira. Barras verdes = empresa financeiramente saudável. Barras vermelhas = risco elevado. Observe a tendência: se as barras vão mudando de verde para laranja para vermelho ao longo dos trimestres, a empresa está se deteriorando. O texto acima de cada barra mostra a classificação (ex: "5 - Sólida").
+**Como ler:** É como um semáforo de saúde financeira. Barras verdes = empresa com estrutura financeira dinâmica saudável. Barras amarelas/laranjas = atenção, a empresa tem fragilidades no financiamento do giro. Barras vermelhas = risco elevado de insolvência. Observe a tendência: se as barras vão mudando de verde para laranja para vermelho ao longo dos trimestres, a empresa está se deteriorando. A nota combina não só a estrutura (sinais de CDG/NCG/T) mas também a magnitude da cobertura.
 
-**Por que observar:** Sintetiza toda a análise dinâmica em um único número fácil de entender. É especialmente útil para comparar a saúde financeira de uma empresa ao longo do tempo e detectar tendências de deterioração antes que os problemas se tornem evidentes nos indicadores de alavancagem.
+**Por que observar:** Sintetiza toda a análise dinâmica em um único número fácil de entender. A escala de 10 pontos diferencia melhor entre empresas com mesma estrutura mas diferentes níveis de folga — por exemplo, duas empresas "sólidas" podem ter notas 6 (cobertura justa) ou 8 (cobertura ampla), o que indica riscos bem diferentes.
 
 ---
 
