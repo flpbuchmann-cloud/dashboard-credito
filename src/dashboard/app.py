@@ -1311,143 +1311,250 @@ def main():
         with st.expander("Metodologia e Glossário de Indicadores", expanded=False):
 
             st.markdown("""
-    ### Como ler este dashboard
+### Como ler este dashboard
 
-    Este dashboard mostra a saúde financeira de uma empresa sob a ótica de **crédito** —
-    ou seja, se a empresa tem capacidade de pagar suas dívidas. Os dados vêm da CVM
-    (demonstrações financeiras oficiais) e dos sites de Relações com Investidores.
+Este dashboard mostra a saúde financeira de uma empresa sob a ótica de **crédito** —
+ou seja, se a empresa tem capacidade de pagar suas dívidas. Os dados vêm da CVM
+(demonstrações financeiras oficiais) e dos sites de Relações com Investidores.
 
-    Todos os valores são **trimestrais** (isolados, não acumulados) salvo quando indicado "LTM"
-    (Last Twelve Months = soma dos últimos 4 trimestres).
+Todos os valores são **trimestrais** (isolados, não acumulados) salvo quando indicado "LTM"
+(Last Twelve Months = soma dos últimos 4 trimestres).
 
-    ---
+---
 
-    ### 1. Demonstração de Resultados (DRE)
+### 1. Demonstração de Resultados (DRE)
 
-    A DRE mostra quanto a empresa **faturou**, quanto **gastou** e quanto **sobrou** em um período.
+A DRE mostra quanto a empresa **faturou**, quanto **gastou** e quanto **sobrou** em um período.
 
-    | Indicador | O que é | Por que importa |
-    |---|---|---|
-    | **Receita Líquida** | Tudo que a empresa vendeu no trimestre, já descontados impostos sobre vendas. | É o ponto de partida — se a receita cai, todo o resto tende a piorar. |
-    | **Resultado Bruto** | Receita menos o custo direto de produção (matéria-prima, mão de obra da fábrica). | Mostra se o negócio principal é rentável antes de despesas administrativas. |
-    | **EBIT** | Lucro operacional — o que sobra depois de pagar todos os custos e despesas do dia a dia, mas **antes** de juros e impostos. | Mede a eficiência operacional pura, sem influência da estrutura de capital. |
-    | **EBITDA** | EBIT + depreciação e amortização. É o lucro operacional "caixa" — ignora gastos contábeis que não saem do caixa. | Principal métrica usada por credores para medir capacidade de pagamento. |
-    | **Resultado Financeiro** | Receitas financeiras (rendimento de aplicações) menos despesas financeiras (juros de dívida). Se negativo, a empresa paga mais juros do que ganha. | Mostra o peso da dívida no resultado. |
-    | **Lucro Líquido** | O que sobra no final, depois de tudo: custos, despesas, juros, impostos. | É o resultado final para o acionista. |
+| Indicador | O que é | Por que importa |
+|---|---|---|
+| **Receita Líquida** | Tudo que a empresa vendeu no trimestre, já descontados impostos sobre vendas. | É o ponto de partida — se a receita cai, todo o resto tende a piorar. |
+| **Resultado Bruto** | Receita menos o custo direto de produção (matéria-prima, mão de obra da fábrica). | Mostra se o negócio principal é rentável antes de despesas administrativas. |
+| **EBIT** | Lucro operacional — o que sobra depois de pagar todos os custos e despesas do dia a dia, mas **antes** de juros e impostos. | Mede a eficiência operacional pura, sem influência da estrutura de capital. |
+| **EBITDA** | EBIT + depreciação e amortização. É o lucro operacional "caixa" — ignora gastos contábeis que não saem do caixa. | Principal métrica usada por credores para medir capacidade de pagamento. |
+| **Resultado Financeiro** | Receitas financeiras (rendimento de aplicações) menos despesas financeiras (juros de dívida). Se negativo, a empresa paga mais juros do que ganha. | Mostra o peso da dívida no resultado. |
+| **Lucro Líquido** | O que sobra no final, depois de tudo: custos, despesas, juros, impostos. | É o resultado final para o acionista. |
 
-    **Margens** — são os indicadores acima divididos pela receita, em percentual:
+**Margens** — são os indicadores acima divididos pela receita, em percentual:
 
-    | Margem | Fórmula | Interpretação |
-    |---|---|---|
-    | **Margem Bruta** | Resultado Bruto / Receita | "De cada R$100 vendidos, quanto sobra após o custo de produção?" |
-    | **Margem EBITDA** | EBITDA / Receita | "De cada R$100 vendidos, quanto sobra de caixa operacional?" Quanto maior, mais folga para pagar dívidas. |
-    | **Margem Líquida** | Lucro Líquido / Receita | "De cada R$100 vendidos, quanto sobra de lucro final?" |
+| Margem | Fórmula | Interpretação |
+|---|---|---|
+| **Margem Bruta** | Resultado Bruto / Receita | "De cada R$100 vendidos, quanto sobra após o custo de produção?" |
+| **Margem EBITDA** | EBITDA / Receita | "De cada R$100 vendidos, quanto sobra de caixa operacional?" Quanto maior, mais folga para pagar dívidas. |
+| **Margem Líquida** | Lucro Líquido / Receita | "De cada R$100 vendidos, quanto sobra de lucro final?" |
 
-    **Growth YoY** — variação em relação ao mesmo trimestre do ano anterior (ex: 3T25 vs 3T24).
-    Mostra se a empresa está crescendo ou encolhendo.
+**Growth YoY** — variação em relação ao mesmo trimestre do ano anterior (ex: 3T25 vs 3T24).
+Mostra se a empresa está crescendo ou encolhendo.
 
-    ---
+#### Gráfico: Receita, EBITDA e Lucro Líquido (barras)
 
-    ### 2. Fluxo de Caixa
+**O que mostra:** Três barras lado a lado para cada trimestre — a Receita (azul), o EBITDA (verde) e o Lucro Líquido (laranja).
 
-    A DRE é "contábil" — inclui receitas e custos que ainda não viraram dinheiro.
-    O fluxo de caixa mostra o **dinheiro real** que entrou e saiu.
+**Como ler:** A Receita é sempre a barra maior. O EBITDA mostra quanto dessa receita virou caixa operacional. O Lucro Líquido é o que sobrou de fato. Compare a altura das barras ao longo do tempo: se a Receita cresce mas o EBITDA e o Lucro encolhem, significa que os custos estão subindo mais rápido que as vendas — sinal de alerta.
 
-    | Indicador | O que é | Por que importa |
-    |---|---|---|
-    | **FCO (Fluxo de Caixa Operacional)** | Dinheiro gerado pelas operações do dia a dia. | Se o FCO é positivo e consistente, a empresa se sustenta sozinha. |
-    | **Capex (FCI)** | Investimentos em ativos (máquinas, minas, fábricas). Normalmente negativo. | Empresas precisam investir para manter e crescer. Capex alto pode ser bom (crescimento) ou preocupante (manutenção cara). |
-    | **FCL (Fluxo de Caixa Livre)** | FCO + Capex. É o dinheiro que sobra depois de operar e investir. | Se positivo, a empresa gera caixa para pagar dívidas, dividendos ou acumular reservas. Se negativo, precisa de financiamento externo. |
-    | **FC Financiamento** | Entradas e saídas de empréstimos, emissão de ações, pagamento de dividendos. | Mostra se a empresa está captando ou pagando dívida. |
-    | **FCO / EBITDA** | Razão entre caixa gerado e EBITDA. | Se próximo de 100%, o EBITDA está "virando caixa" de verdade. Se muito abaixo, pode indicar problemas de capital de giro. |
+**Por que observar:** Este gráfico responde à pergunta mais básica: "A empresa está vendendo mais e lucrando mais com o passar do tempo?" Se as três barras crescem juntas, o negócio está saudável. Se o Lucro Líquido fica negativo (abaixo de zero), a empresa está dando prejuízo.
 
-    ---
+#### Gráfico: Evolução das Margens (linhas)
 
-    ### 3. Estrutura de Capital (Balanço)
+**O que mostra:** Três linhas — Margem Bruta, Margem EBITDA e Margem Líquida — em percentual, ao longo do tempo.
 
-    O balanço é uma "foto" do patrimônio da empresa em uma data específica.
+**Como ler:** As linhas mostram "de cada R$100 que a empresa faturou, quanto sobrou em cada etapa". A Margem Bruta é sempre a mais alta (só desconta custos de produção). A Margem Líquida é a mais baixa (desconta tudo). Observe a tendência: linhas subindo = empresa ficando mais eficiente; linhas caindo = custos corroendo o resultado.
 
-    | Indicador | O que é | Por que importa |
-    |---|---|---|
-    | **Caixa** | Dinheiro em conta + aplicações de liquidez imediata. | É o colchão de segurança. Quanto mais caixa, mais folga para pagar dívidas de curto prazo. |
-    | **Dívida CP** | Empréstimos e financiamentos que vencem em até 12 meses. | Dívida de curto prazo exige caixa disponível ou refinanciamento. |
-    | **Dívida LP** | Empréstimos e financiamentos que vencem após 12 meses. | Dívida de longo prazo dá mais tempo, mas aumenta o custo total de juros. |
-    | **Dívida Bruta** | Dívida CP + Dívida LP. | Total que a empresa deve aos bancos e mercado de capitais. |
-    | **Dívida Líquida** | Dívida Bruta - Caixa. Se negativa, a empresa tem mais caixa que dívida (caixa líquido). | Principal indicador de endividamento. Empresas com dívida líquida negativa são consideradas muito seguras. |
-    | **Patrimônio Líquido (PL)** | Ativo Total - Passivo Total. É o "valor contábil" que pertence aos acionistas. | Se o PL é pequeno em relação à dívida, a empresa está muito alavancada. |
+**Por que observar:** Margens estáveis ou crescentes indicam poder de precificação e controle de custos. Margens caindo podem indicar competição acirrada, perda de eficiência ou aumento de juros. Para análise de crédito, a Margem EBITDA é a mais importante — é ela que determina quanta geração de caixa a empresa tem para pagar dívidas.
 
-    ---
+---
 
-    ### 4. Múltiplos de Alavancagem e Liquidez
+### 2. Fluxo de Caixa
 
-    Estes indicadores comparam dívida com a capacidade de pagamento. São os mais usados por analistas de crédito e agências de rating.
+A DRE é "contábil" — inclui receitas e custos que ainda não viraram dinheiro.
+O fluxo de caixa mostra o **dinheiro real** que entrou e saiu.
 
-    | Indicador | Fórmula | O que significa | Referência |
-    |---|---|---|---|
-    | **Dív.Líq / EBITDA** | Dívida Líquida / EBITDA (LTM) | "Quantos anos de EBITDA seriam necessários para pagar toda a dívida?" | < 2x: confortável. 2-3x: atenção. > 3x: alto risco. |
-    | **Dív.Líq / FCO** | Dívida Líquida / FCO (LTM) | Similar, mas usando caixa real em vez de EBITDA. | Mais conservador que Dív.Líq/EBITDA. |
-    | **Equity Multiplier** | Ativo Total / PL | "Quanto do ativo é financiado por terceiros?" Se = 2x, metade é dívida. | Quanto maior, mais alavancada. |
-    | **Debt-to-Assets** | Dívida Bruta / Ativo Total | Percentual do ativo financiado por dívida bancária. | > 50%: muito endividada. |
-    | **Dív.CP / Dív.Total** | Dívida CP / Dívida Bruta | Concentração de dívida no curto prazo. | > 50%: risco de refinanciamento alto. |
-    | **Liquidez Corrente** | Ativo Circulante / Passivo Circulante | "Para cada R$1 de obrigação de curto prazo, quanto a empresa tem de ativo de curto prazo?" | > 1x: consegue cobrir. < 1x: aperto de liquidez. |
-    | **Cash Ratio** | Caixa / Passivo Circulante | Versão mais conservadora: só considera caixa, não todo o ativo circulante. | > 0.5x: razoável. > 1x: muito confortável. |
-    | **Interest Coverage** | EBIT / Despesas Financeiras | "Quantas vezes o lucro operacional cobre os juros?" | > 3x: saudável. < 1.5x: risco de inadimplência. |
-    | **Dív.Total / PL** | Dívida Bruta / PL | Alavancagem em relação ao capital próprio. | > 2x: alavancagem alta. |
+| Indicador | O que é | Por que importa |
+|---|---|---|
+| **FCO (Fluxo de Caixa Operacional)** | Dinheiro gerado pelas operações do dia a dia. | Se o FCO é positivo e consistente, a empresa se sustenta sozinha. |
+| **Capex (FCI)** | Investimentos em ativos (máquinas, minas, fábricas). Normalmente negativo. | Empresas precisam investir para manter e crescer. Capex alto pode ser bom (crescimento) ou preocupante (manutenção cara). |
+| **FCL (Fluxo de Caixa Livre)** | FCO + Capex. É o dinheiro que sobra depois de operar e investir. | Se positivo, a empresa gera caixa para pagar dívidas, dividendos ou acumular reservas. Se negativo, precisa de financiamento externo. |
+| **FC Financiamento** | Entradas e saídas de empréstimos, emissão de ações, pagamento de dividendos. | Mostra se a empresa está captando ou pagando dívida. |
+| **FCO / EBITDA** | Razão entre caixa gerado e EBITDA. | Se próximo de 100%, o EBITDA está "virando caixa" de verdade. Se muito abaixo, pode indicar problemas de capital de giro. |
 
-    ---
+#### Gráfico: FCO vs Capex vs FCL (barras)
 
-    ### 5. Cronograma de Amortização e Liquidez
+**O que mostra:** Três barras para cada trimestre — FCO (azul), Capex (vermelho, normalmente negativo) e FCL (verde).
 
-    | Conceito | Explicação |
-    |---|---|
-    | **Barra azul (Caixa)** | Quanto dinheiro a empresa tem disponível hoje. |
-    | **Barras vermelhas (anos)** | Quanto de dívida vence em cada ano. |
-    | **Última barra (ex: 2030+)** | Soma de toda a dívida que vence a partir daquele ano em diante. |
+**Como ler:** O FCO (azul) mostra quanto dinheiro entrou das operações. O Capex (vermelho) mostra quanto a empresa gastou em investimentos — aparece para baixo porque é dinheiro saindo. O FCL (verde) é a soma dos dois: se o FCO é maior que o Capex, o FCL é positivo (barra verde para cima) — a empresa está gerando caixa de verdade.
 
-    **Como interpretar:** Se a barra azul (Caixa) é maior que as primeiras barras vermelhas,
-    a empresa consegue pagar as dívidas de curto prazo sem precisar refinanciar.
-    Se as barras vermelhas são maiores, a empresa dependerá de geração de caixa futura
-    ou de novos empréstimos para honrar os vencimentos.
+**Por que observar:** Uma empresa pode parecer lucrativa na DRE mas estar "queimando caixa" na prática (ex: vende a prazo mas não recebe). Este gráfico mostra a realidade do caixa. Se o FCL é consistentemente positivo, a empresa pode pagar dívidas e crescer sem depender de novos empréstimos. Se o FCL é sempre negativo, a empresa precisa se endividar cada vez mais para sobreviver.
 
-    ---
+#### Gráfico: FCO, Capex e FCL como % da Receita (linhas)
 
-    ### 6. Modelo Fleuriet — Nota de Saúde Financeira
+**O que mostra:** As mesmas métricas do gráfico anterior, mas expressas como percentual da receita.
 
-    O Modelo Fleuriet é uma forma de avaliar se a empresa tem uma estrutura financeira saudável,
-    olhando para **como ela financia suas operações do dia a dia**. Em vez de olhar apenas se a empresa
-    tem mais ativos que passivos (análise estática), ele analisa a **dinâmica** do dinheiro dentro da empresa.
+**Como ler:** Se a linha do FCO/Receita está em 20%, significa que a cada R$100 vendidos, R$20 viraram caixa. A linha do Capex/Receita mostra quanto da receita é reinvestido. A linha do FCL/Receita mostra o saldo final.
 
-    O modelo calcula três números e, a partir deles, dá uma **nota de 1 a 6**:
+**Por que observar:** Esse gráfico permite comparar empresas de tamanhos diferentes e ver tendências de eficiência de caixa. Uma empresa que converte 25% da receita em FCO é mais saudável que uma que converte apenas 5%, independentemente do tamanho.
 
-    | Sigla | O que significa | Como pensar |
-    |:------|:----------------|:------------|
-    | **CDG** (Capital de Giro) | Quanto dinheiro de longo prazo (patrimônio + dívidas longas) sobra depois de pagar os ativos de longo prazo (fábricas, minas, etc.) | "Quanto a empresa tem de folga permanente para financiar o dia a dia?" |
-    | **NCG** (Necessidade de Capital de Giro) | Quanto a empresa precisa de dinheiro amarrado nas operações (clientes que ainda não pagaram + estoque) menos o que os fornecedores estão financiando | "Quanto de dinheiro fica 'preso' no ciclo operacional?" Se negativo, a empresa recebe antes de pagar — ótimo! |
-    | **T** (Saldo de Tesouraria) | CDG menos NCG. É o que sobra (ou falta) depois de financiar as operações | "A empresa tem folga de caixa ou está dependendo de empréstimos de curto prazo?" |
+---
 
-    **As notas:**
+### 3. Estrutura de Capital (Balanço)
 
-    | Nota | Classificação | O que acontece | Em linguagem simples |
-    |:----:|:-------------|:---------------|:---------------------|
-    | **6** | Excelente | CDG (+), NCG (−), T (+) | A empresa tem folga de longo prazo E recebe dos clientes antes de pagar fornecedores. Situação ideal. |
-    | **5** | Sólida | CDG (+), NCG (+), T (+) | A empresa precisa de capital de giro, mas sua folga de longo prazo cobre tudo com sobra. Saudável. |
-    | **4** | Insatisfatória | CDG (+), NCG (+), T (−) | A empresa tem folga de longo prazo, mas não é suficiente. Precisa de empréstimos de curto prazo para operar. Sinal de atenção. |
-    | **3** | Alto Risco | CDG (−), NCG (−), T (+) | A empresa investe mais do que tem de recursos permanentes. Só não quebra porque recebe antes de pagar. Instável. |
-    | **2** | Muito Ruim | CDG (−), NCG (−), T (−) | Tanto a estrutura de longo prazo quanto a tesouraria estão negativas. Vulnerável a qualquer choque. |
-    | **1** | Péssima | CDG (−), NCG (+), T (−) | A empresa precisa de capital de giro, não tem folga de longo prazo e depende totalmente de crédito de curto prazo. Risco de insolvência. |
+O balanço é uma "foto" do patrimônio da empresa em uma data específica.
 
-    **Efeito Tesoura:** Quando o Saldo de Tesouraria (T) vai ficando cada vez mais negativo trimestre após trimestre,
-    é um sinal grave de que a empresa está financiando operações permanentes com dívida de curto prazo — como pagar
-    o aluguel com o cheque especial todo mês. O gráfico de evolução mostra se isso está acontecendo.
+| Indicador | O que é | Por que importa |
+|---|---|---|
+| **Caixa** | Dinheiro em conta + aplicações de liquidez imediata. | É o colchão de segurança. Quanto mais caixa, mais folga para pagar dívidas de curto prazo. |
+| **Dívida CP** | Empréstimos e financiamentos que vencem em até 12 meses. | Dívida de curto prazo exige caixa disponível ou refinanciamento. |
+| **Dívida LP** | Empréstimos e financiamentos que vencem após 12 meses. | Dívida de longo prazo dá mais tempo, mas aumenta o custo total de juros. |
+| **Dívida Bruta** | Dívida CP + Dívida LP. | Total que a empresa deve aos bancos e mercado de capitais. |
+| **Dívida Líquida** | Dívida Bruta - Caixa. Se negativa, a empresa tem mais caixa que dívida (caixa líquido). | Principal indicador de endividamento. Empresas com dívida líquida negativa são consideradas muito seguras. |
+| **Patrimônio Líquido (PL)** | Ativo Total - Passivo Total. É o "valor contábil" que pertence aos acionistas. | Se o PL é pequeno em relação à dívida, a empresa está muito alavancada. |
 
-    ---
+#### Gráfico: Dívida Líquida vs Alavancagem (barras + linha)
 
-    ### Fonte dos dados
+**O que mostra:** Barras mostram a Dívida Líquida em R$ bilhões ao longo do tempo. A linha mostra o múltiplo Dívida Líquida / EBITDA (quantos anos de EBITDA a empresa precisaria para pagar toda a dívida).
 
-    - **Dados estruturados (DRE, Balanço, DFC):** API de Dados Abertos da CVM ([dados.cvm.gov.br](https://dados.cvm.gov.br))
-    - **Cronograma de amortização:** Extraído dos PDFs de ITR/DFP via notas explicativas
-    - **Periodicidade:** Trimestral (ITR) e Anual (DFP)
-    - **Valores:** Em reais (R$), escala de milhares na CVM, convertidos para unidades
+**Como ler:** As barras indicam o volume absoluto de dívida (depois de descontar o caixa). A linha mostra se essa dívida é "pesada" em relação à capacidade de pagamento. Uma empresa pode ter R$10 bilhões de dívida e estar confortável (se seu EBITDA é R$5 bi = 2,0x), enquanto outra com R$2 bilhões pode estar em risco (se seu EBITDA é R$500 mi = 4,0x).
+
+**Por que observar:** Este é o gráfico mais importante para análise de crédito. Ele responde: "A dívida está crescendo mais rápido que a capacidade de pagamento?" Se a linha (alavancagem) sobe consistentemente, a empresa está se endividando além de suas possibilidades. Se a linha desce, a empresa está desalavancando — bom sinal. Referência: abaixo de 2,5x é confortável; acima de 3,5x é preocupante.
+
+---
+
+### 4. Capital de Giro
+
+#### Gráfico: Componentes do Capital de Giro (barras)
+
+**O que mostra:** Três barras — Contas a Receber (azul), Estoques (laranja) e Fornecedores (vermelho) — para cada trimestre.
+
+**Como ler:** Contas a Receber é dinheiro que a empresa tem a receber de clientes (já vendeu mas ainda não recebeu). Estoques é mercadoria parada no armazém. Fornecedores é dinheiro que a empresa deve a quem lhe vende matéria-prima. Pense assim: Contas a Receber + Estoques = dinheiro "preso" no negócio. Fornecedores = dinheiro que os outros estão financiando para a empresa. Se os dois primeiros crescem muito mais rápido que o terceiro, a empresa precisa de mais capital de giro.
+
+**Por que observar:** Mostra a eficiência operacional. Uma empresa que demora para receber dos clientes e acumula muito estoque precisa de mais caixa para operar — sobra menos para pagar dívidas. Se Fornecedores cresce em relação aos outros, pode ser bom (mais prazo para pagar) ou preocupante (a empresa está atrasando pagamentos).
+
+#### Gráfico: Ciclo de Conversão de Caixa em dias (linhas)
+
+**O que mostra:** Quatro linhas em dias — DSO (dias para receber dos clientes), DIO (dias de estoque), DPO (dias para pagar fornecedores) e Ciclo de Caixa (DSO + DIO − DPO).
+
+**Como ler:** O DSO indica quantos dias em média a empresa leva para receber de seus clientes. O DIO indica quantos dias a mercadoria fica parada no estoque. O DPO indica quantos dias a empresa demora para pagar seus fornecedores. O Ciclo de Caixa é a soma do DSO + DIO menos o DPO — é o número de dias que o dinheiro da empresa fica "preso" entre comprar, produzir e receber a venda.
+
+**Por que observar:** Quanto menor o Ciclo de Caixa, melhor — significa que a empresa transforma suas operações em dinheiro mais rapidamente. Se o Ciclo de Caixa está subindo ao longo do tempo, a empresa está precisando de cada vez mais capital de giro, o que pode pressionar o caixa. Empresas com Ciclo de Caixa negativo (como varejistas que recebem à vista e pagam fornecedores a prazo) têm vantagem financeira.
+
+---
+
+### 5. Múltiplos de Alavancagem e Liquidez
+
+Estes indicadores comparam dívida com a capacidade de pagamento. São os mais usados por analistas de crédito e agências de rating.
+
+| Indicador | Fórmula | O que significa | Referência |
+|---|---|---|---|
+| **Dív.Líq / EBITDA** | Dívida Líquida / EBITDA (LTM) | "Quantos anos de EBITDA seriam necessários para pagar toda a dívida?" | < 2x: confortável. 2-3x: atenção. > 3x: alto risco. |
+| **Dív.Líq / FCO** | Dívida Líquida / FCO (LTM) | Similar, mas usando caixa real em vez de EBITDA. | Mais conservador que Dív.Líq/EBITDA. |
+| **Equity Multiplier** | Ativo Total / PL | "Quanto do ativo é financiado por terceiros?" Se = 2x, metade é dívida. | Quanto maior, mais alavancada. |
+| **Debt-to-Assets** | Dívida Bruta / Ativo Total | Percentual do ativo financiado por dívida bancária. | > 50%: muito endividada. |
+| **Dív.CP / Dív.Total** | Dívida CP / Dívida Bruta | Concentração de dívida no curto prazo. | > 50%: risco de refinanciamento alto. |
+| **Liquidez Corrente** | Ativo Circulante / Passivo Circulante | "Para cada R$1 de obrigação de curto prazo, quanto a empresa tem de ativo de curto prazo?" | > 1x: consegue cobrir. < 1x: aperto de liquidez. |
+| **Cash Ratio** | Caixa / Passivo Circulante | Versão mais conservadora: só considera caixa, não todo o ativo circulante. | > 0.5x: razoável. > 1x: muito confortável. |
+| **Interest Coverage** | EBIT / Despesas Financeiras | "Quantas vezes o lucro operacional cobre os juros?" | > 3x: saudável. < 1.5x: risco de inadimplência. |
+| **Dív.Total / PL** | Dívida Bruta / PL | Alavancagem em relação ao capital próprio. | > 2x: alavancagem alta. |
+
+#### Gráfico: Liquidez (linhas)
+
+**O que mostra:** Três linhas — Liquidez Corrente (azul), Liquidez Seca (laranja) e Cash Ratio (verde).
+
+**Como ler:** Todas medem a mesma ideia: "A empresa consegue pagar o que deve no curto prazo?" A diferença é o quão conservador é o cálculo. A Liquidez Corrente usa todos os ativos de curto prazo (caixa + clientes + estoque). A Liquidez Seca exclui os estoques (que podem ser difíceis de vender rápido). O Cash Ratio só usa dinheiro em caixa — é o teste mais rigoroso. O valor 1,0 é a linha crítica: acima de 1,0, a empresa tem mais ativos que dívidas de curto prazo.
+
+**Por que observar:** Se a Liquidez Corrente cai abaixo de 1,0, a empresa tem mais dívidas de curto prazo do que ativos para pagá-las — risco iminente de calote. Se mesmo o Cash Ratio está acima de 1,0, a empresa pode pagar tudo só com o dinheiro em caixa, sem depender de receber de clientes.
+
+#### Gráfico: Alavancagem e Cobertura de Juros (linhas)
+
+**O que mostra:** Três linhas — Dívida Líquida/EBITDA (roxo), Dívida Total/PL (vermelho) e EBITDA/Despesas Financeiras (azul).
+
+**Como ler:** As duas primeiras linhas medem endividamento: Dív.Líq/EBITDA mostra em quantos anos de lucro operacional a empresa pagaria a dívida; Dív.Total/PL mostra quanto a empresa deve em relação ao patrimônio dos acionistas. A terceira linha (EBITDA/Desp.Fin) mede o oposto — a capacidade de pagar juros: quantas vezes o lucro operacional cobre a despesa financeira. Para as duas primeiras, menor é melhor. Para a terceira, maior é melhor.
+
+**Por que observar:** Estas são as métricas que bancos e agências de rating usam para decidir se concedem crédito. Se Dív.Líq/EBITDA sobe acima de 3,5x, a empresa pode ter dificuldade em conseguir novos empréstimos. Se a cobertura de juros cai abaixo de 1,5x, a empresa mal consegue pagar os juros — situação crítica.
+
+#### Gráfico: Evolução da Solvência (linha)
+
+**O que mostra:** Uma única linha com o índice de solvência (Ativo Total / Passivo Total) ao longo do tempo.
+
+**Como ler:** Se o valor é 2,0, significa que para cada R$1 de dívida total (de curto e longo prazo), a empresa tem R$2 em ativos. Quanto mais alto, mais solvente. O valor 1,0 é o limite: abaixo disso, a empresa deve mais do que possui.
+
+**Por que observar:** É a medida mais ampla de saúde financeira. Diferente da liquidez (que olha só o curto prazo), a solvência olha o balanço inteiro. Uma empresa pode ter boa liquidez de curto prazo mas ser insolvente se as dívidas de longo prazo superam o valor dos ativos.
+
+#### Gráfico: Evolução do Custo da Dívida (linha)
+
+**O que mostra:** Uma linha mostrando o custo médio anual da dívida da empresa (Despesas Financeiras / Dívida Bruta), em percentual.
+
+**Como ler:** Se o custo está em 12%, significa que a empresa paga, em média, 12% ao ano de juros sobre sua dívida. Compare com a taxa Selic: se o custo da dívida está muito acima da Selic, pode indicar que o mercado considera a empresa arriscada (cobra mais caro para emprestar). Se está próximo ou abaixo da Selic, a empresa tem bom rating e consegue condições favoráveis.
+
+**Por que observar:** Mesmo que a dívida fique estável, um aumento no custo da dívida pode deteriorar os resultados. Se a empresa precisa rolar dívidas em um cenário de juros altos, o custo sobe e consome mais do lucro operacional. Esse gráfico ajuda a detectar esse risco antes que ele apareça no Lucro Líquido.
+
+---
+
+### 6. Cronograma de Amortização e Liquidez
+
+| Conceito | Explicação |
+|---|---|
+| **Barra azul (Caixa)** | Quanto dinheiro a empresa tem disponível hoje. |
+| **Barras vermelhas (anos)** | Quanto de dívida vence em cada ano. |
+| **Última barra (ex: 2030+)** | Soma de toda a dívida que vence a partir daquele ano em diante. |
+
+#### Gráfico: Cronograma de Amortização (barras horizontais)
+
+**O que mostra:** Uma barra azul no topo representando o caixa disponível, seguida por barras vermelhas para cada ano, mostrando quanto de dívida vence naquele ano. O dashboard mostra esse gráfico para os 3 períodos mais recentes, lado a lado, permitindo ver como o perfil da dívida evoluiu.
+
+**Como ler:** Compare a barra azul (Caixa) com as barras vermelhas dos próximos 2-3 anos. Se o Caixa é maior que a soma dos vencimentos dos próximos 2 anos, a empresa está confortável — pode pagar suas dívidas próximas mesmo sem gerar nenhum caixa novo. Se alguma barra vermelha é gigante comparada às outras, a empresa tem uma "parede de vencimentos" naquele ano e vai precisar refinanciar. Compare os 3 gráficos lado a lado: se o perfil melhora (dívida se espalha, caixa cresce), bom sinal. Se piora, risco crescente.
+
+**Por que observar:** Este gráfico mostra o risco mais concreto de crédito: "Quando as dívidas vencem e a empresa tem caixa para pagá-las?" Uma empresa pode ter bons indicadores de alavancagem mas estar em risco se tem uma concentração grande de vencimentos em um único ano.
+
+---
+
+### 7. Modelo Fleuriet — Nota de Saúde Financeira
+
+O Modelo Fleuriet é uma forma de avaliar se a empresa tem uma estrutura financeira saudável,
+olhando para **como ela financia suas operações do dia a dia**. Em vez de olhar apenas se a empresa
+tem mais ativos que passivos (análise estática), ele analisa a **dinâmica** do dinheiro dentro da empresa.
+
+O modelo calcula três números e, a partir deles, dá uma **nota de 1 a 6**:
+
+| Sigla | O que significa | Como pensar |
+|:------|:----------------|:------------|
+| **CDG** (Capital de Giro) | Quanto dinheiro de longo prazo (patrimônio + dívidas longas) sobra depois de pagar os ativos de longo prazo (fábricas, minas, etc.) | "Quanto a empresa tem de folga permanente para financiar o dia a dia?" |
+| **NCG** (Necessidade de Capital de Giro) | Quanto a empresa precisa de dinheiro amarrado nas operações (clientes que ainda não pagaram + estoque) menos o que os fornecedores estão financiando | "Quanto de dinheiro fica 'preso' no ciclo operacional?" Se negativo, a empresa recebe antes de pagar — ótimo! |
+| **T** (Saldo de Tesouraria) | CDG menos NCG. É o que sobra (ou falta) depois de financiar as operações | "A empresa tem folga de caixa ou está dependendo de empréstimos de curto prazo?" |
+
+**As notas:**
+
+| Nota | Classificação | O que acontece | Em linguagem simples |
+|:----:|:-------------|:---------------|:---------------------|
+| **6** | Excelente | CDG (+), NCG (−), T (+) | A empresa tem folga de longo prazo E recebe dos clientes antes de pagar fornecedores. Situação ideal. |
+| **5** | Sólida | CDG (+), NCG (+), T (+) | A empresa precisa de capital de giro, mas sua folga de longo prazo cobre tudo com sobra. Saudável. |
+| **4** | Insatisfatória | CDG (+), NCG (+), T (−) | A empresa tem folga de longo prazo, mas não é suficiente. Precisa de empréstimos de curto prazo para operar. Sinal de atenção. |
+| **3** | Alto Risco | CDG (−), NCG (−), T (+) | A empresa investe mais do que tem de recursos permanentes. Só não quebra porque recebe antes de pagar. Instável. |
+| **2** | Muito Ruim | CDG (−), NCG (−), T (−) | Tanto a estrutura de longo prazo quanto a tesouraria estão negativas. Vulnerável a qualquer choque. |
+| **1** | Péssima | CDG (−), NCG (+), T (−) | A empresa precisa de capital de giro, não tem folga de longo prazo e depende totalmente de crédito de curto prazo. Risco de insolvência. |
+
+#### Gráfico: CDG, NCG e Saldo de Tesouraria (barras)
+
+**O que mostra:** Três barras lado a lado para cada trimestre — CDG (azul), NCG (laranja) e Saldo de Tesouraria (verde).
+
+**Como ler:** O CDG (azul) mostra a folga financeira de longo prazo. O NCG (laranja) mostra quanto a empresa precisa de capital preso nas operações. O T (verde) é a diferença entre os dois. Se a barra verde está positiva (acima de zero), a empresa tem sobra de caixa. Se está negativa (abaixo de zero), ela depende de empréstimos de curto prazo para operar. Observe se a barra verde vai ficando cada vez mais negativa — isso é o **Efeito Tesoura**, um sinal grave de deterioração financeira.
+
+**Por que observar:** Este gráfico revela problemas que não aparecem em indicadores tradicionais. Uma empresa pode ter boa alavancagem e bom EBITDA mas estar financiando operações permanentes com dívida de curto prazo — como uma pessoa que paga o aluguel com cartão de crédito todo mês. O Saldo de Tesouraria caindo é frequentemente o primeiro sinal de uma crise financeira futura.
+
+#### Gráfico: Evolução da Nota Fleuriet (barras coloridas)
+
+**O que mostra:** Uma barra por trimestre com a nota de 1 a 6, colorida de verde (notas 5-6, saudável), azul (nota 4, atenção), laranja (nota 3, risco) a vermelho (notas 1-2, perigo).
+
+**Como ler:** É como um semáforo de saúde financeira. Barras verdes = empresa financeiramente saudável. Barras vermelhas = risco elevado. Observe a tendência: se as barras vão mudando de verde para laranja para vermelho ao longo dos trimestres, a empresa está se deteriorando. O texto acima de cada barra mostra a classificação (ex: "5 - Sólida").
+
+**Por que observar:** Sintetiza toda a análise dinâmica em um único número fácil de entender. É especialmente útil para comparar a saúde financeira de uma empresa ao longo do tempo e detectar tendências de deterioração antes que os problemas se tornem evidentes nos indicadores de alavancagem.
+
+---
+
+### Fonte dos dados
+
+- **Dados estruturados (DRE, Balanço, DFC):** API de Dados Abertos da CVM ([dados.cvm.gov.br](https://dados.cvm.gov.br))
+- **Cronograma de amortização:** Extraído dos PDFs de ITR/DFP e Releases de Resultados via notas explicativas
+- **Periodicidade:** Trimestral (ITR) e Anual (DFP)
+- **Valores:** Em reais (R$), escala de milhares na CVM, convertidos para unidades
             """)
 
 
