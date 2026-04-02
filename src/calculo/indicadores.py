@@ -254,9 +254,14 @@ def calcular_indicadores(caminho_json: str) -> pd.DataFrame:
     receita_dia = receita_ltm.replace(0, np.nan) / 360
     custo_dia = custo_ltm.replace(0, np.nan) / 360
 
-    resultado["dso"] = ar / receita_dia  # Dias de Recebimento
-    resultado["dio"] = est / custo_dia   # Dias de Estoque
-    resultado["dpo"] = forn / custo_dia  # Dias de Pagamento
+    # Compras = CPV + ΔEstoques (Fleuriet: PMP usa compras, não CPV)
+    delta_est = est.diff()
+    compras_ltm = (resultado["custo"].abs() + delta_est.fillna(0)).rolling(4).sum()
+    compras_dia = compras_ltm.replace(0, np.nan) / 360
+
+    resultado["dso"] = ar / receita_dia   # Dias de Recebimento
+    resultado["dio"] = est / custo_dia    # Dias de Estoque
+    resultado["dpo"] = forn / compras_dia # Dias de Pagamento (sobre compras)
     resultado["ciclo_caixa"] = (
         _safe_get(resultado, "dso", 0).fillna(0) +
         _safe_get(resultado, "dio", 0).fillna(0) -
@@ -315,8 +320,9 @@ def calcular_indicadores(caminho_json: str) -> pd.DataFrame:
     div_pagos_ltm = _safe_get(resultado, "dividendos_pagos", 0).fillna(0).abs().rolling(4).sum()
     resultado["payout"] = div_pagos_ltm / resultado["lucro_ltm"].abs().replace(0, np.nan)
 
-    # Custo da Dívida = |Despesas Financeiras| LTM / Dívida Bruta média
-    resultado["custo_divida"] = desp_fin_ltm / db
+    # Custo da Dívida = |Despesas Financeiras| LTM / Dívida Bruta média (4 trimestres)
+    db_media = resultado["divida_bruta"].rolling(4).mean().replace(0, np.nan)
+    resultado["custo_divida"] = desp_fin_ltm / db_media
 
     # Solvência = Ativo Total / (Passivo Circulante + Passivo Não Circulante)
     pnc = _safe_get(resultado, "passivo_nao_circulante", 0).fillna(0)
@@ -326,6 +332,30 @@ def calcular_indicadores(caminho_json: str) -> pd.DataFrame:
     # Fluxos como % da Receita
     resultado["fco_receita"] = resultado["fco"] / receita
     resultado["fcl_receita"] = resultado["fcl"] / receita
+
+    # =====================================================================
+    # 6. RETORNO (ROE, ROIC, GAF)
+    # =====================================================================
+    # ROE = Lucro Líquido LTM / PL médio (Assaf Neto: usar PL médio, excluir lucro do exercício)
+    lucro_ltm = resultado["lucro_ltm"]
+    pl_media = _safe_get(resultado, "patrimonio_liquido", 0).fillna(0).rolling(4).mean().replace(0, np.nan)
+    resultado["roe"] = lucro_ltm / pl_media
+
+    # ROIC = NOPAT LTM / Capital Investido médio
+    # NOPAT = EBIT × (1 - t), usando t efetiva = IR/EBIT (quando positivo)
+    ir_ltm = resultado["ir_csll"].abs().rolling(4).sum()
+    ebt_ltm = _safe_get(resultado, "lucro_antes_ir", 0).fillna(0).abs().rolling(4).sum().replace(0, np.nan)
+    taxa_efetiva = (ir_ltm / ebt_ltm).clip(0, 0.5).fillna(0.34)  # fallback 34% (IR+CSLL padrão BR)
+    ebit_ltm_val = resultado["ebit_ltm"].fillna(0)
+    nopat_ltm = ebit_ltm_val * (1 - taxa_efetiva)
+    # Capital Investido = PL + Dívida Bruta (passivo oneroso + capital próprio)
+    capital_investido = _safe_get(resultado, "patrimonio_liquido", 0).fillna(0) + resultado["divida_bruta"]
+    capital_investido_media = capital_investido.rolling(4).mean().replace(0, np.nan)
+    resultado["roic"] = nopat_ltm / capital_investido_media
+
+    # GAF = ROE / ROIC (Grau de Alavancagem Financeira)
+    roic_nz = resultado["roic"].replace(0, np.nan)
+    resultado["gaf"] = resultado["roe"] / roic_nz
 
     # =====================================================================
     # 7. MODELO FLEURIET (Análise Dinâmica de Capital de Giro)
@@ -426,6 +456,10 @@ def calcular_indicadores(caminho_json: str) -> pd.DataFrame:
     ncg_nz = resultado["fleuriet_ncg"].replace(0, np.nan)
     resultado["fleuriet_cdg_ncg"] = resultado["fleuriet_cdg"] / ncg_nz  # Cobertura CDG/NCG
     resultado["fleuriet_t_receita"] = resultado["fleuriet_t"] / receita  # T como % da receita
+
+    # NCG/Receita LTM — indicador de Efeito Tesoura (Fleuriet Cap.2)
+    # Se cresce consistentemente, sinaliza que o ciclo operacional consome cada vez mais capital
+    resultado["fleuriet_ncg_receita"] = resultado["fleuriet_ncg"] / receita_ltm.replace(0, np.nan)
 
     return resultado
 
@@ -528,6 +562,9 @@ def formatar_tabela_capital_giro(df: pd.DataFrame) -> pd.DataFrame:
 def formatar_tabela_multiplos(df: pd.DataFrame) -> pd.DataFrame:
     colunas = {
         "label": "Período",
+        "roe": "ROE (LTM)",
+        "roic": "ROIC (LTM)",
+        "gaf": "GAF",
         "divida_liq_ebitda": "Dív.Líq/EBITDA",
         "divida_liq_fco": "Dív.Líq/FCO",
         "interest_coverage_ebitda": "EBITDA/Desp.Fin (LTM)",
@@ -559,6 +596,7 @@ def formatar_tabela_fleuriet(df: pd.DataFrame) -> pd.DataFrame:
         "fleuriet_t": "Saldo de Tesouraria (T)",
         "fleuriet_cdg_ncg": "CDG / NCG",
         "fleuriet_t_receita": "T / Receita",
+        "fleuriet_ncg_receita": "NCG / Receita (LTM)",
         "fleuriet_nota": "Nota Fleuriet",
         "fleuriet_tipo": "Classificação",
     }

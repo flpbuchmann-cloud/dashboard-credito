@@ -1163,6 +1163,9 @@ def main():
         display_mult = tab_mult.set_index("Período").T
 
         formato_mult = {
+            "ROE (LTM)": fmt_pct,
+            "ROIC (LTM)": fmt_pct,
+            "GAF": fmt_multiplo,
             "Dív.Líq/EBITDA": fmt_multiplo,
             "Dív.Líq/FCO": fmt_multiplo,
             "EBITDA/Desp.Fin (LTM)": fmt_multiplo,
@@ -1185,7 +1188,7 @@ def main():
             if row_name in display_mult.index:
                 display_mult.loc[row_name] = display_mult.loc[row_name].apply(fmt_fn)
 
-        st.dataframe(display_mult, use_container_width=True, height=500)
+        st.dataframe(display_mult, use_container_width=True, height=600)
 
         col_m1, col_m2 = st.columns(2)
         with col_m1:
@@ -1247,14 +1250,15 @@ def main():
             "Saldo de Tesouraria (T)": fmt_bilhoes,
             "CDG / NCG": fmt_multiplo,
             "T / Receita": fmt_pct,
-            "Nota Fleuriet": lambda v: f"{v:.0f}/6" if not pd.isna(v) else "-",
+            "NCG / Receita (LTM)": fmt_pct,
+            "Nota Fleuriet": lambda v: f"{v:.0f}/10" if not pd.isna(v) else "-",
         }
         display_fl = display_fl.astype(object)
         for row_name, fmt_fn in formato_fl.items():
             if row_name in display_fl.index:
                 display_fl.loc[row_name] = display_fl.loc[row_name].apply(fmt_fn)
 
-        st.dataframe(display_fl, use_container_width=True, height=320)
+        st.dataframe(display_fl, use_container_width=True, height=360)
 
         # Gráficos Fleuriet
         col_fl_g1, col_fl_g2 = st.columns(2)
