@@ -991,6 +991,7 @@ def main():
             "Margem Líquida": fmt_pct,
         }
 
+        display_dre = display_dre.astype(object)
         for row_name, fmt_fn in formato_rows.items():
             if row_name in display_dre.index:
                 display_dre.loc[row_name] = display_dre.loc[row_name].apply(fmt_fn)
@@ -1046,6 +1047,7 @@ def main():
             "Dividendos Pagos": fmt_bilhoes,
             "FC Financiamento": fmt_bilhoes,
         }
+        display_fc = display_fc.astype(object)
         for row_name, fmt_fn in formato_fc.items():
             if row_name in display_fc.index:
                 display_fc.loc[row_name] = display_fc.loc[row_name].apply(fmt_fn)
@@ -1090,6 +1092,7 @@ def main():
             "Dív.Líq/EBITDA": fmt_multiplo,
             "Dív.Líq/FCO": fmt_multiplo,
         }
+        display_ec = display_ec.astype(object)
         for row_name, fmt_fn in formato_ec.items():
             if row_name in display_ec.index:
                 display_ec.loc[row_name] = display_ec.loc[row_name].apply(fmt_fn)
@@ -1119,6 +1122,7 @@ def main():
             "DPO (dias)": lambda v: f"{v:.0f}" if not pd.isna(v) else "-",
             "Ciclo de Caixa (dias)": lambda v: f"{v:.0f}" if not pd.isna(v) else "-",
         }
+        display_cg = display_cg.astype(object)
         for row_name, fmt_fn in formato_cg.items():
             if row_name in display_cg.index:
                 display_cg.loc[row_name] = display_cg.loc[row_name].apply(fmt_fn)
@@ -1176,6 +1180,7 @@ def main():
             "Capex/EBITDA (LTM)": fmt_pct,
             "Payout (LTM)": fmt_pct,
         }
+        display_mult = display_mult.astype(object)
         for row_name, fmt_fn in formato_mult.items():
             if row_name in display_mult.index:
                 display_mult.loc[row_name] = display_mult.loc[row_name].apply(fmt_fn)
@@ -1244,6 +1249,7 @@ def main():
             "T / Receita": fmt_pct,
             "Nota Fleuriet": lambda v: f"{v:.0f}/6" if not pd.isna(v) else "-",
         }
+        display_fl = display_fl.astype(object)
         for row_name, fmt_fn in formato_fl.items():
             if row_name in display_fl.index:
                 display_fl.loc[row_name] = display_fl.loc[row_name].apply(fmt_fn)
