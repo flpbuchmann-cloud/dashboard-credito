@@ -1461,5 +1461,82 @@
       "dividendos_pagos": 8648816000.0,
       "captacao_divida": 120553000.0
     }
+  },
+  {
+    "periodo": "2025-12-31",
+    "tipo": "DFP_dre",
+    "ano": 2025,
+    "contas": {
+      "receita_liquida": 52073804000.0,
+      "custo": -38466548000.0,
+      "resultado_bruto": 13607256000.0,
+      "despesas_operacionais": -5470344000.0,
+      "despesas_vendas": -1180990000.0,
+      "despesas_ga": -2542113000.0,
+      "resultado_equivalencia": 1259634000.0,
+      "ebit": 8136912000.0,
+      "resultado_financeiro": -5681908000.0,
+      "receitas_financeiras": 4776870000.0,
+      "despesas_financeiras": -10458778000.0,
+      "lucro_antes_ir": 2455004000.0,
+      "ir_csll": -421765000.0,
+      "lucro_liquido": 2503931000.0
+    }
+  },
+  {
+    "periodo": "2025-12-31",
+    "tipo": "DFP_bpa",
+    "ano": 2025,
+    "contas": {
+      "ativo_total": 109603944000.0,
+      "ativo_circulante": 26604996000.0,
+      "caixa": 2659827000.0,
+      "aplicacoes_financeiras_cp": 7822072000.0,
+      "contas_a_receber": 13489028000.0,
+      "estoques_cp": 291436000.0,
+      "ativo_nao_circulante": 82998948000.0,
+      "investimentos": 7568289000.0,
+      "imobilizado": 7008882000.0,
+      "intangivel": 31729991000.0
+    }
+  },
+  {
+    "periodo": "2025-12-31",
+    "tipo": "DFP_bpp",
+    "ano": 2025,
+    "contas": {
+      "passivo_total": 109603944000.0,
+      "passivo_circulante": 17803899000.0,
+      "fornecedores": 4970620000.0,
+      "obrigacoes_fiscais_cp": 1708945000.0,
+      "emprestimos_cp": 4413485000.0,
+      "outras_obrigacoes_cp": 4980753000.0,
+      "provisoes_cp": 1551426000.0,
+      "passivo_nao_circulante": 63472098000.0,
+      "emprestimos_lp": 50058278000.0,
+      "outras_obrigacoes_lp": 8881908000.0,
+      "provisoes_lp": 3198308000.0,
+      "patrimonio_liquido": 28327947000.0,
+      "capital_social": 22169281000.0
+    }
+  },
+  {
+    "periodo": "2025-12-31",
+    "tipo": "DFP_dfc",
+    "ano": 2025,
+    "contas": {
+      "fco": 3973867000.0,
+      "caixa_gerado_operacoes": 8934261000.0,
+      "depreciacao_amortizacao": 86248000.0,
+      "juros_emprestimos_dfc": 4793395000.0,
+      "var_ativos_passivos": -816780000.0,
+      "juros_pagos": 928902000.0,
+      "fci": -2865070000.0,
+      "capex": -8095382000.0,
+      "fcf": -1755334000.0,
+      "amortizacao_divida": 6683043000.0,
+      "dividendos_pagos": 12631547000.0,
+      "captacao_divida": 23543000.0
+    }
   }
 ]
