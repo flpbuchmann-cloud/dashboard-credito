@@ -971,6 +971,26 @@ def main():
         if tipo_fl:
             st.caption(f"**{tipo_fl}**")
 
+    # 2ª linha de KPIs: Retorno e Custo de Capital (ROIC / WACC / Spread / EVA / Kd)
+    col_r1, col_r2, col_r3, col_r4, col_r5 = st.columns(5)
+    with col_r1:
+        st.metric("ROIC (LTM)", fmt_pct(ultimo.get("roic")))
+    with col_r2:
+        st.metric("WACC", fmt_pct(ultimo.get("wacc")))
+    with col_r3:
+        spread = ultimo.get("spread_roic_wacc")
+        st.metric(
+            "Spread (ROIC − WACC)",
+            fmt_pct(spread),
+            delta=("cria valor" if (spread is not None and not pd.isna(spread) and spread > 0)
+                   else ("destrói valor" if (spread is not None and not pd.isna(spread) and spread < 0) else None)),
+            delta_color=("normal" if (spread is not None and not pd.isna(spread) and spread >= 0) else "inverse"),
+        )
+    with col_r4:
+        st.metric("EVA", fmt_bilhoes(ultimo.get("eva")))
+    with col_r5:
+        st.metric("Kd (Custo da Dívida)", fmt_pct(ultimo.get("custo_divida")))
+
     st.markdown("---")
 
     # =====================================================================
