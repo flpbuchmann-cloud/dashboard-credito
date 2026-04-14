@@ -588,6 +588,299 @@ def grafico_fluxo_caixa(df, titulo="FCO vs Capex vs FCL"):
     )
 
 
+def grafico_composicao_divida(df, titulo="Composição da Dívida (CP vs LP)"):
+    """Gráfico de barras verticais empilhadas: dívida de curto prazo e longo prazo."""
+    fig = go.Figure()
+    labels = df["label"].tolist()
+
+    for col, nome, cor in [
+        ("emprestimos_cp", "Dívida CP", CORES["vermelho"]),
+        ("emprestimos_lp", "Dívida LP", CORES["azul"]),
+    ]:
+        valores = df[col].fillna(0).tolist()
+        texto = [f"R$ {v/1e9:.1f}bi" if abs(v) >= 1e6 else "" for v in valores]
+        fig.add_trace(go.Bar(
+            name=nome,
+            x=labels,
+            y=valores,
+            marker_color=cor,
+            text=texto,
+            textposition="inside",
+            textfont=dict(size=9, color="white"),
+        ))
+
+    fig.update_layout(
+        title=dict(text=titulo, font=dict(size=16)),
+        barmode="stack",
+        height=400,
+        margin=dict(t=50, b=30, l=50, r=20),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        yaxis=dict(gridcolor="#eee", title="R$"),
+        plot_bgcolor="white",
+    )
+    return fig
+
+
+def grafico_divida_bruta_receita(df, titulo="Dívida Bruta vs Receita Líquida"):
+    """Gráfico combo: barras (dívida bruta) + linha (receita líquida, eixo secundário)."""
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    labels = df["label"].tolist()
+
+    # Barras - Dívida Bruta
+    valores_db = df["divida_bruta"].fillna(0).tolist()
+    fig.add_trace(
+        go.Bar(
+            name="Dívida Bruta",
+            x=labels,
+            y=valores_db,
+            marker_color=CORES["vermelho"],
+            opacity=0.7,
+            text=[f"R$ {v/1e9:.1f}bi" for v in valores_db],
+            textposition="outside",
+            textfont=dict(size=8),
+        ),
+        secondary_y=False,
+    )
+
+    # Linha - Receita Líquida (LTM)
+    receita_ltm = df["receita_liquida"].rolling(4).sum()
+    fig.add_trace(
+        go.Scatter(
+            name="Receita Líquida (LTM)",
+            x=labels,
+            y=receita_ltm.tolist(),
+            mode="lines+markers",
+            line=dict(color=CORES["azul"], width=3),
+            marker=dict(size=8),
+        ),
+        secondary_y=True,
+    )
+
+    fig.update_layout(
+        title=dict(text=titulo, font=dict(size=16)),
+        height=400,
+        margin=dict(t=50, b=30, l=50, r=50),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        plot_bgcolor="white",
+    )
+    fig.update_yaxes(title_text="Dívida Bruta (R$)", gridcolor="#eee", secondary_y=False)
+    fig.update_yaxes(title_text="Receita Líquida LTM (R$)", gridcolor="#eee", secondary_y=True)
+    return fig
+
+
+def _fig_sem_dados(titulo, mensagem="Dados insuficientes para o período selecionado."):
+    """Retorna figura placeholder com mensagem visível quando série está vazia."""
+    fig = go.Figure()
+    fig.add_annotation(
+        text=mensagem,
+        xref="paper", yref="paper", x=0.5, y=0.5,
+        showarrow=False, font=dict(size=14, color="#888"),
+    )
+    fig.update_layout(
+        title=dict(text=titulo, font=dict(size=16)),
+        height=350,
+        margin=dict(t=50, b=30, l=50, r=20),
+        plot_bgcolor="white",
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+    )
+    return fig
+
+
+def grafico_roic_vs_wacc(df, titulo="ROIC vs WACC — Evolução QoQ"):
+    """Linhas duplas: ROIC e WACC em %, com área de spread (verde se cria valor, vermelho se destrói)."""
+    has_roic = "roic" in df.columns and df["roic"].notna().any()
+    has_wacc = "wacc" in df.columns and df["wacc"].notna().any()
+    if not has_roic and not has_wacc:
+        return _fig_sem_dados(titulo, "ROIC e WACC indisponíveis (precisa de ≥4 trimestres).")
+
+    fig = go.Figure()
+    labels = df["label"].tolist()
+
+    if has_roic:
+        roic_vals = df["roic"].tolist()
+        fig.add_trace(go.Scatter(
+            name="ROIC (LTM)",
+            x=labels, y=roic_vals,
+            mode="lines+markers+text",
+            line=dict(color=CORES["azul"], width=3),
+            marker=dict(size=9),
+            text=[f"{v*100:.1f}%" if pd.notna(v) else "" for v in roic_vals],
+            textposition="top center",
+            textfont=dict(size=9, color=CORES["azul"]),
+        ))
+
+    if has_wacc:
+        wacc_vals = df["wacc"].tolist()
+        fig.add_trace(go.Scatter(
+            name="WACC",
+            x=labels, y=wacc_vals,
+            mode="lines+markers+text",
+            line=dict(color=CORES["laranja"], width=3, dash="dash"),
+            marker=dict(size=9),
+            text=[f"{v*100:.1f}%" if pd.notna(v) else "" for v in wacc_vals],
+            textposition="bottom center",
+            textfont=dict(size=9, color=CORES["laranja"]),
+        ))
+
+    fig.update_layout(
+        title=dict(text=titulo, font=dict(size=16)),
+        height=420,
+        margin=dict(t=60, b=30, l=50, r=20),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        yaxis=dict(tickformat=".1%", gridcolor="#eee", title="% a.a."),
+        plot_bgcolor="white",
+        hovermode="x unified",
+    )
+    return fig
+
+
+def grafico_eva(df, titulo="EVA — Evolução QoQ (Valor Econômico Adicionado)"):
+    """Barras coloridas (verde se cria valor, vermelho se destrói) com R$ na label."""
+    if "eva" not in df.columns or not df["eva"].notna().any():
+        return _fig_sem_dados(titulo, "EVA indisponível (depende de ROIC, WACC e Capital Investido).")
+
+    fig = go.Figure()
+    labels = df["label"].tolist()
+    eva_vals = df["eva"].fillna(0).tolist()
+    cores_eva = [CORES["verde"] if v >= 0 else CORES["vermelho"] for v in eva_vals]
+    textos = [
+        (f"R$ {v/1e9:.2f}bi" if abs(v) >= 1e9
+         else f"R$ {v/1e6:.0f}mi" if abs(v) >= 1e6
+         else "")
+        for v in eva_vals
+    ]
+
+    fig.add_trace(go.Bar(
+        name="EVA",
+        x=labels, y=eva_vals,
+        marker_color=cores_eva,
+        text=textos,
+        textposition="outside",
+        textfont=dict(size=10),
+    ))
+
+    fig.update_layout(
+        title=dict(text=titulo, font=dict(size=16)),
+        height=420,
+        margin=dict(t=60, b=30, l=50, r=20),
+        showlegend=False,
+        yaxis=dict(gridcolor="#eee", title="EVA (R$)", zeroline=True, zerolinewidth=2, zerolinecolor="#555"),
+        plot_bgcolor="white",
+    )
+    return fig
+
+
+def grafico_roic_wacc_eva(df, titulo="ROIC vs WACC e EVA"):
+    """Combo: linhas (ROIC e WACC, eixo %) + barras (EVA, eixo R$)."""
+    has_roic = "roic" in df.columns and df["roic"].notna().any()
+    has_wacc = "wacc" in df.columns and df["wacc"].notna().any()
+    has_eva = "eva" in df.columns and df["eva"].notna().any()
+    if not (has_roic or has_wacc or has_eva):
+        return _fig_sem_dados(titulo, "ROIC, WACC e EVA indisponíveis.")
+
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    labels = df["label"].tolist()
+
+    if has_eva:
+        eva_vals = df["eva"].fillna(0).tolist()
+        cores_eva = [CORES["verde"] if v >= 0 else CORES["vermelho"] for v in eva_vals]
+        fig.add_trace(
+            go.Bar(
+                name="EVA",
+                x=labels, y=eva_vals,
+                marker_color=cores_eva, opacity=0.4,
+                text=[f"R$ {v/1e9:.1f}bi" if abs(v) >= 1e6 else "" for v in eva_vals],
+                textposition="outside", textfont=dict(size=8),
+            ),
+            secondary_y=False,
+        )
+
+    if has_roic:
+        fig.add_trace(
+            go.Scatter(
+                name="ROIC", x=labels, y=df["roic"].tolist(),
+                mode="lines+markers",
+                line=dict(color=CORES["azul"], width=3), marker=dict(size=8),
+            ),
+            secondary_y=True,
+        )
+
+    if has_wacc:
+        fig.add_trace(
+            go.Scatter(
+                name="WACC", x=labels, y=df["wacc"].tolist(),
+                mode="lines+markers",
+                line=dict(color=CORES["laranja"], width=3, dash="dash"), marker=dict(size=8),
+            ),
+            secondary_y=True,
+        )
+
+    fig.update_layout(
+        title=dict(text=titulo, font=dict(size=16)),
+        height=450,
+        margin=dict(t=50, b=30, l=50, r=50),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        plot_bgcolor="white",
+    )
+    fig.update_yaxes(title_text="EVA (R$)", gridcolor="#eee", secondary_y=False)
+    fig.update_yaxes(title_text="ROIC / WACC", tickformat=".1%", gridcolor="#eee", secondary_y=True)
+    return fig
+
+
+def grafico_evolucao_kd(df, titulo="Custo do Capital de Terceiros (Kd) — Evolução QoQ"):
+    """Linhas: Kd bruto e Kd após IR. Robusto a falta de ir_csll/lucro_antes_ir."""
+    if "custo_divida" not in df.columns or not df["custo_divida"].notna().any():
+        return _fig_sem_dados(titulo, "Custo da dívida indisponível (precisa de Despesas Financeiras e Dívida Bruta ≥4 trimestres).")
+
+    fig = go.Figure()
+    labels = df["label"].tolist()
+    kd_vals = df["custo_divida"].tolist()
+
+    fig.add_trace(go.Scatter(
+        name="Kd bruto",
+        x=labels, y=kd_vals,
+        mode="lines+markers+text",
+        line=dict(color=CORES["vermelho"], width=3),
+        marker=dict(size=9),
+        text=[f"{v*100:.1f}%" if pd.notna(v) else "" for v in kd_vals],
+        textposition="top center",
+        textfont=dict(size=9, color=CORES["vermelho"]),
+    ))
+
+    # Kd após IR: usa taxa efetiva real se disponível; fallback 34% (IR+CSLL padrão BR)
+    taxa_ef = None
+    if "ir_csll" in df.columns and "lucro_antes_ir" in df.columns:
+        ir_ltm = df["ir_csll"].abs().rolling(4, min_periods=1).sum()
+        ebt_ltm = df["lucro_antes_ir"].abs().rolling(4, min_periods=1).sum().replace(0, np.nan)
+        taxa_ef = (ir_ltm / ebt_ltm).clip(0, 0.5).fillna(0.34)
+    else:
+        taxa_ef = pd.Series([0.34] * len(df), index=df.index)
+
+    kd_at = (df["custo_divida"] * (1 - taxa_ef)).tolist()
+    fig.add_trace(go.Scatter(
+        name="Kd após IR (Kd × (1−t))",
+        x=labels, y=kd_at,
+        mode="lines+markers+text",
+        line=dict(color=CORES["laranja"], width=2, dash="dash"),
+        marker=dict(size=7),
+        text=[f"{v*100:.1f}%" if pd.notna(v) else "" for v in kd_at],
+        textposition="bottom center",
+        textfont=dict(size=8, color=CORES["laranja"]),
+    ))
+
+    fig.update_layout(
+        title=dict(text=titulo, font=dict(size=16)),
+        height=420,
+        margin=dict(t=60, b=30, l=50, r=20),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        yaxis=dict(tickformat=".1%", gridcolor="#eee", title="% a.a."),
+        plot_bgcolor="white",
+        hovermode="x unified",
+    )
+    return fig
+
+
 # =========================================================================
 # LAYOUT DO DASHBOARD
 # =========================================================================
@@ -1102,6 +1395,15 @@ def main():
         fig_divida = grafico_divida_alavancagem(df)
         st.plotly_chart(fig_divida, use_container_width=True)
 
+        col_ec1, col_ec2 = st.columns(2)
+        with col_ec1:
+            fig_comp_div = grafico_composicao_divida(df)
+            st.plotly_chart(fig_comp_div, use_container_width=True)
+
+        with col_ec2:
+            fig_db_rec = grafico_divida_bruta_receita(df)
+            st.plotly_chart(fig_db_rec, use_container_width=True)
+
         st.markdown("---")
 
         # =====================================================================
@@ -1180,6 +1482,9 @@ def main():
             "Solvência Geral": fmt_multiplo,
             "Dív.Total / PL": fmt_multiplo,
             "Custo da Dívida": fmt_pct,
+            "WACC": fmt_pct,
+            "Spread (ROIC - WACC)": fmt_pct,
+            "EVA (R$)": fmt_bilhoes,
             "Capex/EBITDA (LTM)": fmt_pct,
             "Payout (LTM)": fmt_pct,
         }
@@ -1211,27 +1516,74 @@ def main():
             )
             st.plotly_chart(fig_alav, use_container_width=True)
 
-        col_m3, col_m4 = st.columns(2)
-        with col_m3:
-            fig_solv = grafico_linhas_multiplos(
-                df,
-                ["solvencia"],
-                ["Solvência Geral (Ativo Total / Passivo Total)"],
-                [CORES["azul"]],
-                "Evolução da Solvência",
-            )
-            st.plotly_chart(fig_solv, use_container_width=True)
+        fig_solv = grafico_linhas_multiplos(
+            df,
+            ["solvencia"],
+            ["Solvência Geral (Ativo Total / Passivo Total)"],
+            [CORES["azul"]],
+            "Evolução da Solvência",
+        )
+        st.plotly_chart(fig_solv, use_container_width=True)
 
-        with col_m4:
-            fig_custo = grafico_linhas_multiplos(
-                df,
-                ["custo_divida"],
-                ["Custo da Dívida (|Desp.Fin| LTM / Dív.Bruta)"],
-                [CORES["vermelho"]],
-                "Evolução do Custo da Dívida",
+        st.markdown("---")
+
+        # =====================================================================
+        # 5c. RETORNO E CUSTO DE CAPITAL (ROIC, WACC, EVA, Kd)
+        # =====================================================================
+        st.header("Retorno e Custo de Capital (ROIC, WACC, EVA, Kd)")
+
+        # KPIs resumo (último período)
+        col_k1, col_k2, col_k3, col_k4, col_k5 = st.columns(5)
+        ult_roic = ultimo.get("roic")
+        ult_wacc = ultimo.get("wacc")
+        ult_eva = ultimo.get("eva")
+        ult_kd = ultimo.get("custo_divida")
+        ult_spread = ultimo.get("spread_roic_wacc")
+        with col_k1:
+            st.metric("ROIC (LTM)", fmt_pct(ult_roic))
+        with col_k2:
+            st.metric("WACC", fmt_pct(ult_wacc))
+        with col_k3:
+            st.metric("Spread (ROIC − WACC)", fmt_pct(ult_spread))
+        with col_k4:
+            st.metric("EVA", fmt_bilhoes(ult_eva))
+        with col_k5:
+            st.metric("Kd (bruto)", fmt_pct(ult_kd))
+
+        # Linha 1: ROIC vs WACC (esq) | Kd (dir)
+        col_rc1, col_rc2 = st.columns(2)
+        with col_rc1:
+            fig_roic_wacc_line = grafico_roic_vs_wacc(df)
+            st.plotly_chart(fig_roic_wacc_line, use_container_width=True, key="roic_vs_wacc")
+        with col_rc2:
+            fig_kd = grafico_evolucao_kd(df)
+            st.plotly_chart(fig_kd, use_container_width=True, key="kd_qoq")
+
+        # Linha 2: EVA em barras (full width)
+        fig_eva_only = grafico_eva(df)
+        st.plotly_chart(fig_eva_only, use_container_width=True, key="eva_qoq")
+
+        # Linha 3: Combo consolidado (ROIC+WACC+EVA)
+        fig_roic_wacc = grafico_roic_wacc_eva(df, titulo="ROIC vs WACC + EVA (consolidado)")
+        st.plotly_chart(fig_roic_wacc, use_container_width=True, key="roic_wacc_eva_combo")
+
+        with st.expander("Metodologia (Assaf Neto — Valuation)"):
+            st.markdown(
+                """
+                - **ROIC (LTM)** = NOPAT LTM / Capital Investido médio (4T).
+                  NOPAT = EBIT × (1 − t); t = IR/CSLL LTM / Lucro antes IR LTM (clipado 0–50%, fallback 34%).
+                  Capital Investido = PL + Dívida Bruta (onerosa).
+                - **Kd (custo de capital de terceiros)** = |Despesas Financeiras LTM| / Dívida Bruta média (4T).
+                  Kd após IR = Kd × (1 − t) — usado no WACC.
+                - **WACC** = Kd(1−t) × D/(D+E) + Ke × E/(D+E).
+                  Ke usa ROE como proxy (sem mercado/CAPM); zerado quando ROE < 0.
+                - **EVA** = (ROIC − WACC) × Capital Investido. Positivo ⇒ cria valor; negativo ⇒ destrói.
+                - **Spread (ROIC − WACC)** indica a margem econômica sobre o custo de capital.
+
+                Referências: Assaf Neto, *Valuation — Métricas de Valor & Avaliação de Empresas* (2013).
+                Rolling 4T → primeiros 3 trimestres aparecem vazios por construção.
+                """
             )
-            fig_custo.update_layout(yaxis=dict(tickformat=".1%"))
-            st.plotly_chart(fig_custo, use_container_width=True)
 
         st.markdown("---")
 

@@ -357,6 +357,22 @@ def calcular_indicadores(caminho_json: str) -> pd.DataFrame:
     roic_nz = resultado["roic"].replace(0, np.nan)
     resultado["gaf"] = resultado["roe"] / roic_nz
 
+    # WACC = Kd(1-t) × D/(D+E) + Ke × E/(D+E)
+    # Ke = ROE (proxy para empresas sem dados de mercado / CAPM)
+    # Referência: Assaf Neto — Valuation (2013), Cap. "Custo de Capital de Terceiros"
+    d_plus_e = resultado["divida_bruta"] + _safe_get(resultado, "patrimonio_liquido", 0).fillna(0)
+    d_plus_e_nz = d_plus_e.replace(0, np.nan)
+    peso_d = resultado["divida_bruta"] / d_plus_e_nz
+    peso_e = _safe_get(resultado, "patrimonio_liquido", 0).fillna(0) / d_plus_e_nz
+    kd_after_tax = resultado["custo_divida"] * (1 - taxa_efetiva)
+    ke_proxy = resultado["roe"].clip(lower=0)  # Ke negativo não faz sentido econômico
+    resultado["wacc"] = kd_after_tax * peso_d + ke_proxy * peso_e
+
+    # EVA = (ROIC - WACC) × Capital Investido
+    # Referência: Assaf Neto — EVA (Economic Value Added), Stern Stewart & Co.
+    resultado["eva"] = (resultado["roic"] - resultado["wacc"]) * capital_investido
+    resultado["spread_roic_wacc"] = resultado["roic"] - resultado["wacc"]
+
     # =====================================================================
     # 7. MODELO FLEURIET (Análise Dinâmica de Capital de Giro)
     # =====================================================================
@@ -579,6 +595,9 @@ def formatar_tabela_multiplos(df: pd.DataFrame) -> pd.DataFrame:
         "solvencia": "Solvência Geral",
         "divida_total_pl": "Dív.Total / PL",
         "custo_divida": "Custo da Dívida",
+        "wacc": "WACC",
+        "spread_roic_wacc": "Spread (ROIC - WACC)",
+        "eva": "EVA (R$)",
         "capex_ebitda": "Capex/EBITDA (LTM)",
         "payout": "Payout (LTM)",
     }
