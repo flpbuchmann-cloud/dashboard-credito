@@ -76,6 +76,7 @@ _PASTA_DEPLOY = {
     "Log CP": "Log CP",
     "Cocal": "Cocal",
     "FS Bioenergia": "FS Bioenergia",
+    "BRF": "BRF",
 }
 
 
@@ -244,6 +245,11 @@ EMPRESAS = {
         "ticker": "N/A",
         "setor": "Sucroenergético / Etanol",
         "pasta": _pasta_empresa("FS Bioenergia"),
+    },
+    "BRF": {
+        "ticker": "BRFS3",
+        "setor": "Alimentos / Proteína",
+        "pasta": _pasta_empresa("BRF"),
     },
 }
 
