@@ -457,7 +457,13 @@ def grafico_divida_alavancagem(df, titulo="Dívida Líquida vs Alavancagem"):
         plot_bgcolor="white",
     )
     fig.update_yaxes(title_text="R$", gridcolor="#eee", secondary_y=False)
-    fig.update_yaxes(title_text="x EBITDA", gridcolor="#eee", secondary_y=True)
+    fig.update_yaxes(
+        title_text="x EBITDA",
+        gridcolor="#eee",
+        secondary_y=True,
+        autorange=True,
+        rangemode="normal",
+    )
     return fig
 
 
