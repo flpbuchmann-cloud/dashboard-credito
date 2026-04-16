@@ -178,6 +178,13 @@ EMPRESAS = {
         "categorias_dfp_itr": ["demonstracoes-financeiras-itrdfp"],
         "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/Log CP",
     },
+    "BRF": {
+        "nome_cvm": "BRF S.A.",
+        "url_ri": "https://ri.brf-global.com/informacoes-financeiras/resultados-trimestrais/",
+        "categorias_release": ["resultados-releases"],
+        "categorias_dfp_itr": ["resultados-demonstracoes-financeiras"],
+        "pasta_pdfs": "G:/Meu Drive/Análise de Crédito/BRF",
+    },
 }
 
 

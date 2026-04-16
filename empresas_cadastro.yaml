@@ -11,23 +11,22 @@
 empresas:
 
   # ---- Exemplo preenchido (CSN Mineração) ----
-  - nome: "Minerva"                        # (*) Nome de exibição no dashboard
-    ticker: "BEEF3"                               # (*) Código na B3 (ou "N/A" se não listada)
-    setor: "Proteína"                            # (*) Setor de atuação
+  - nome: "BRF S.A."                        # (*) Nome de exibição no dashboard
+    ticker: "BRFS3"                               # (*) Código na B3 (ou "N/A" se não listada)
+    setor: "Alimentos"                            # (*) Setor de atuação
 
     # --- Dados CVM (empresa listada na B3) ---
     tem_cvm: true                                 # (*) true = busca automática na CVM; false = dados manuais
-    nome_cvm: "MINERVA S.A"                     # (~) Razão social na CVM (obrigatório se tem_cvm: true)
+    nome_cvm: "BRF S.A."                     # (~) Razão social na CVM (obrigatório se tem_cvm: true)
 
     # --- Site de RI (para download automático de PDFs) ---
-    url_ri: "https://ri.minervafoods.com/resultados-trimestrais/"
-    categorias_release:                           # (~) Categorias de releases no site de RI
-      - "central-release"
+    url_ri: "https://ri.brf-global.com/informacoes-financeiras/resultados-trimestrais/"  # (~) URL do site de RI
+
     categorias_dfp_itr:                           # (~) Categorias de ITR/DFP no site de RI
-      - "itr-dfp"
+      - "itr-dfp-apresentacao de resultados-planilha de resultados-resultados-demonstracoes financeiras-demonstracoes financeiras trimestrais"
 
     # --- Pastas ---
-    pasta: "G:/Meu Drive/Análise de Crédito/Minerva"  # (*) Pasta raiz da empresa
+    pasta: "G:/Meu Drive/Análise de Crédito/BRF"  # (*) Pasta raiz da empresa
 
     # --- Coleta ---
     ano_inicio: 2021                              # (*) Ano inicial para buscar dados
@@ -35,252 +34,6 @@ empresas:
 
     # --- Status ---
     status: "ativo"                               # ativo | pendente | erro
-
-
-  - nome: "Klabin"
-    ticker: "KLBN11"
-    setor: "Papel e Celulose"
-
-    tem_cvm: true
-    nome_cvm: "KLABIN S.A."
-
-    url_ri: "https://ri.klabin.com.br/informacoes-financeiras/central-de-resultados/"
-    categorias_release:
-      - "central_de_resultados_releases_de_resultados"
-    categorias_dfp_itr:
-      - "central_de_resultados_demonstracoes_financeiras_itrdfp"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/Klabin"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "ativo"
-
-
-  - nome: "Rede D'Or"
-    ticker: "RDOR3"
-    setor: "Saúde"
-
-    tem_cvm: true
-    nome_cvm: "REDE D'OR SÃO LUIZ S.A."
-
-    url_ri: "https://ri.rededorsaoluiz.com.br/informacoes-financeiras/central-de-resultados/"
-    categorias_release:
-      - "relatorio-de-resultados"
-    categorias_dfp_itr:
-      - "demonstracoes-financeiras"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/Rede Dor"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "ativo"
-
-
-  - nome: "Movida"
-    ticker: "MOVI3"
-    setor: "Locação de Veículos"
-
-    tem_cvm: true
-    nome_cvm: "MOVIDA PARTICIPAÇÕES S.A."
-
-    url_ri: "https://ri.movida.com.br/resultados-trimestrais/"
-    categorias_release:
-      - "resultados-resultados"
-    categorias_dfp_itr:
-      - "resultados-itrdfp"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/Movida"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "ativo"
-
-
-  - nome: "Vamos"
-    ticker: "VAMO3"
-    setor: "Locação de Caminhões e Máquinas"
-
-    tem_cvm: true
-    nome_cvm: "VAMOS LOCAÇÃO DE CAMINHÕES, MÁQUINAS E EQUIPAMENTOS S.A."
-
-    url_ri: "https://ri.grupovamos.com.br/informacoes-financeiras/resultados-trimestrais/"
-    categorias_release:
-      - "cr-trimestrais"
-    categorias_dfp_itr:
-      - "cr-demonstracoes-financeiras"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/Vamos"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "ativo"
-
-
-  - nome: "JSL"
-    ticker: "JSLG3"
-    setor: "Logística"
-
-    tem_cvm: true
-    nome_cvm: "JSL S.A."
-
-    url_ri: "https://ri.jsl.com.br/central-de-resultados/"
-    categorias_release:
-      - "resultados-release"
-    categorias_dfp_itr:
-      - "resultados-itr"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/JSL"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "ativo"
-
-
-  - nome: "JBS"
-    ticker: "JBSS3"
-    setor: "Proteína / Frigoríficos"
-
-    tem_cvm: true
-    nome_cvm: "JBS SA"
-
-    url_ri: "https://ir.jbsglobal.com/pt-br/resultados-e-apresentacoes/central-de-resultados/"
-    categorias_release:
-      - "central_de_resultados_release_de_resultados"
-    categorias_dfp_itr:
-      - "central_de_resultados_demonstracoes_financeras_itrdfp"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/JBS"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "ativo"
-
-
-  - nome: "Direcional"
-    ticker: "DIRR3"
-    setor: "Construção Civil / Incorporação"
-
-    tem_cvm: true
-    nome_cvm: "DIRECIONAL ENGENHARIA SA"
-
-    url_ri: "https://ri.direcional.com.br/informacoes-financeiras/central-de-resultados/"
-    categorias_release:
-      - "central_de_resultados_release_de_resultados"
-    categorias_dfp_itr:
-      - "central_de_resultados_itrdfp"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/Direcional"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "ativo"
-
-
-  - nome: "Aegea"
-    ticker: "N/A"
-    setor: "Saneamento"
-
-    tem_cvm: true
-    nome_cvm: "AEGEA SANEAMENTO E PARTICIPAÇÕES S.A."
-
-    url_ri: "https://ri.aegea.com.br/informacoes-aos-investidores/central-de-resultados/"
-    categorias_release:
-      - "central-releases-de-resultados"
-    categorias_dfp_itr:
-      - "central-itrdfp"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/Aegea"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "ativo"
-
-
-  - nome: "Moura Dubeux"
-    ticker: "MDNE3"
-    setor: "Construção Civil / Incorporação"
-
-    tem_cvm: true
-    nome_cvm: "MOURA DUBEUX ENGENHARIA S/A"
-
-    url_ri: "https://ri.mouradubeux.com.br/informacoes-financeiras/central-de-resultados/"
-    categorias_release:
-      - "er_"
-    categorias_dfp_itr:
-      - "itr"
-      - "dfp"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/Moura Dubeux"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "ativo"
-
-
-  - nome: "Cyrela"
-    ticker: "CYRE3"
-    setor: "Construção Civil / Incorporação"
-
-    tem_cvm: true
-    nome_cvm: "CYRELA BRAZIL REALTY S.A.EMPREEND E PART"
-
-    url_ri: "https://ri.cyrela.com.br/informacoes-financeiras/central-de-resultados/"
-    categorias_release:
-      - "central_de_resultados_earnings_releases"
-    categorias_dfp_itr:
-      - "central_de_resultados_demonstracoes_financeiras_itr__dfp"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/Cyrela"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "ativo"
-
-
-  - nome: "Log CP"
-    ticker: "LOGG3"
-    setor: "Galpões Logísticos"
-
-    tem_cvm: true
-    nome_cvm: "LOG COMMERCIAL PROPERTIES E PARTICIPAÇÕES"
-
-    url_ri: "https://ri.logcp.com.br/informacoes-financeiras/central-de-resultados/"
-    categorias_release:
-      - "release"
-    categorias_dfp_itr:
-      - "demonstracoes-financeiras-itrdfp"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/Log CP"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "ativo"
-
-
-  - nome: "Cocal"
-    ticker: "N/A"
-    setor: "Sucroenergético"
-
-    tem_cvm: false
-    nome_cvm: ""
-
-    url_ri: ""
-    categorias_release: []
-    categorias_dfp_itr: []
-
-    pasta: "G:/Meu Drive/Análise de Crédito/Cocal"
-    ano_inicio: 2021
-    ano_fim: null
-    status: "pendente"
-
-
-  - nome: "FS Bioenergia"
-    ticker: "N/A"
-    setor: "Sucroenergético / Etanol"
-
-    tem_cvm: false
-    nome_cvm: ""
-
-    url_ri: "https://www.fs.agr.br/investidores/informacoes-financeiras/central-de-resultados/"
-    categorias_release:
-      - "resultados"
-    categorias_dfp_itr:
-      - "demonstracoes-financeiras"
-
-    pasta: "G:/Meu Drive/Análise de Crédito/FS Bioenergia"
-    ano_inicio: 2024
-    ano_fim: null
-    status: "ativo"
 
 
   # ---- Template para nova empresa (copie e preencha) ----
