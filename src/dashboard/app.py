@@ -2178,6 +2178,16 @@ O modelo calcula três números e, a partir deles, atribui uma **nota de 1 a 10*
 
 def app():
     """Entry point com autenticação."""
+    # Embutido no PM Studio: o app externo já autentica o usuário, então
+    # não exibimos o login próprio do dashboard de crédito (vai direto ao
+    # conteúdo, sem formulário nem botão de logout).
+    if globals().get("_PM_EMBEDDED"):
+        st.session_state["authenticated"] = True
+        st.session_state["username"] = globals().get("_PM_USUARIO") or "pm-studio"
+        st.session_state.setdefault("user_role", "viewer")
+        main()
+        return
+
     # Verificar se já está autenticado (sem renderizar formulário)
     if st.session_state.get("authenticated", False):
         show_logout()
